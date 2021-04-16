@@ -17,7 +17,10 @@ bool HwInit(void)
 
 	GpioInit();
 	UartInit(DEF_UART_CHANNEL_0);
-	UsbInit(1);
+
+	LedInit(DEF_LED_CHANNEL_0);
+
+	CliInit();
 
 	return ret;
 }

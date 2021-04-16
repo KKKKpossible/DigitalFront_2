@@ -21,7 +21,11 @@ extern "C"{
 #define DEF_UART_CHANNEL_MAX HW_UART_CHANNEL_MAX
 
 
-bool UartInit(uint8_t ch);
+bool     UartInit        (uint8_t ch);
+bool     UartWrite       (uint8_t ch, uint8_t* data, uint16_t length);
+uint8_t  UartReadBuffer  (uint8_t ch);
+uint16_t UartTxAvailable (uint8_t ch);
+uint16_t UartRxAvailable (uint8_t ch);
 
 
 #endif

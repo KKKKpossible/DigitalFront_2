@@ -16,12 +16,21 @@ extern "C"{
 
 #include "stm32f1xx_hal.h"
 
-#include "usart.h"
+//#include "adc.h"
+//#include "i2c.h"
+//#include "rtc.h"
+//#include "spi.h"
+//#include "tim.h"
+//#include "usart.h"
+//#include "gpio.h"
 
 
 void BspInit(void);
 void Error_Handler(void);
 
+
+void     delay  (uint32_t mill);
+uint32_t millis (void);
 
 #ifdef __cplusplus
 }

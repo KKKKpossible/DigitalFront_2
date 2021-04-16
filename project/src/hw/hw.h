@@ -18,8 +18,9 @@ extern "C"{
 
 #include "sjk_gpio.h"
 #include "sjk_uart.h"
-#include "sjk_usb.h"
-
+#include "sjk_cli.h"
+#include "sjk_gpio.h"
+#include "sjk_led.h"
 
 bool HwInit(void);
 

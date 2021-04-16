@@ -76,3 +76,13 @@ int __io_putchar(int ch)
 {
 	return 1;
 }
+
+uint32_t millis(void)
+{
+    return HAL_GetTick();
+}
+
+void delay(uint32_t mill)
+{
+    HAL_Delay(mill);
+}
