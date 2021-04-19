@@ -18,14 +18,23 @@ extern "C"{
 
 
 #ifdef  HW_CLI_USE
-#define DEF_CLI_CHANNEL_MAX HW_CLI_CHANNEL_MAX
 
 
 // cli cmd string arr
-extern char* cli_cmd_mode_cmd[];
-// cli cmd method
-void CliCmdModeToggle(void);
+extern char* cli_cmd_mode_cmd   [];
 
+extern char* cli_log_on_cmd     [];
+extern char* cli_log_off_cmd    [];
+extern char* cli_log_toggle_cmd [];
+extern char* cli_log_read_cmd   [];
+
+// cli cmd method
+void CliCmdModeToggle (void);
+
+void CliLogOn         (void);
+void CliLogOff        (void);
+void CliLogToggle     (void);
+void CliLogRead       (void);
 
 // led cmd string arr
 extern char* cli_led_on_cmd     [];

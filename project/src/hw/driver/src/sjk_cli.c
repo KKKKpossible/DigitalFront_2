@@ -19,7 +19,7 @@ static bool ParseProcedure(void)
 {
     bool ret = 0;
     bool catched = false;
-    for(int i = 0; i < DEF_CLI_CHANNEL_MAX; i++)
+    for(int i = 0; cli_arr[i].name[0] != '\0'; i++)
     {
         if(catched == true)
         {
@@ -42,13 +42,18 @@ static bool ParseProcedure(void)
     return ret;
 }
 
-Cli_t cli_arr[DEF_CLI_CHANNEL_MAX] =
+Cli_t cli_arr[] =
         {
                 {.name = "LED ON"         , .cmd = cli_led_on_cmd     , .fp = CliLedOn        },
                 {.name = "LED OFF"        , .cmd = cli_led_off_cmd    , .fp = CliLedOff       },
                 {.name = "LED TOGGLE"     , .cmd = cli_led_toggle_cmd , .fp = CliLedToggle    },
                 {.name = "LED Read"       , .cmd = cli_led_read_cmd   , .fp = CliLedRead      },
-                {.name = "CMD MODE ON OFF", .cmd = cli_cmd_mode_cmd   , .fp = CliCmdModeToggle}
+                {.name = "CMD MODE ON OFF", .cmd = cli_cmd_mode_cmd   , .fp = CliCmdModeToggle},
+                {.name = "LOG ON"         , .cmd = cli_log_on_cmd     , .fp = CliLogOn        },
+                {.name = "LOG OFF"        , .cmd = cli_log_off_cmd    , .fp = CliLogOff       },
+                {.name = "LOG TOGGLE"     , .cmd = cli_log_toggle_cmd , .fp = CliLogToggle    },
+                {.name = "LOG Read"       , .cmd = cli_log_read_cmd   , .fp = CliLogRead      },
+                {.name = "\0"}
         };
 
 Parse_t parse_var;

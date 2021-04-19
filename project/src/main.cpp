@@ -6,7 +6,7 @@ extern ApClass ap;
 
 extern UART_HandleTypeDef huart1;
 
-extern Cli_t cli_arr[DEF_CLI_CHANNEL_MAX];
+extern Cli_t cli_arr[];
 
 int main(void)
 {

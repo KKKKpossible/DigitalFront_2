@@ -18,7 +18,6 @@ extern "C"{
 
 
 #ifdef  HW_CLI_USE
-#define DEF_CLI_CHANNEL_MAX HW_CLI_CHANNEL_MAX
 
 typedef enum ECHO_ENUM
 {
