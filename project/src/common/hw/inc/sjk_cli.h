@@ -34,11 +34,12 @@ typedef struct Cli_t
 }Cli_t;
 
 
+#define PARSE_BUFF_MAX (1024U)
 
 typedef struct Parse_t
 {
     bool     asterisk_det;
-    uint8_t  buffer[100];
+    uint8_t  buffer[PARSE_BUFF_MAX];
     uint16_t index;
     bool     echo_on[ECHO_ENUM_MAX];
     bool     cmd_mode_on;
