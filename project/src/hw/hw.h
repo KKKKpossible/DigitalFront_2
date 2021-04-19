@@ -21,6 +21,10 @@ extern "C"{
 #include "sjk_cli.h"
 #include "sjk_gpio.h"
 #include "sjk_led.h"
+#include "sjk_adc.h"
+#include "sjk_dma.h"
+#include "sjk_monitor.h"
+
 
 bool HwInit(void);
 

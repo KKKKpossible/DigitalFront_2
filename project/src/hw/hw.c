@@ -15,12 +15,18 @@ bool HwInit(void)
 
 	BspInit();
 
+    DmaInit();
+
 	GpioInit();
 	UartInit(DEF_UART_CHANNEL_0);
 
 	LedInit(DEF_LED_CHANNEL_0);
 
 	CliInit();
+
+	AdcInit();
+
+	MonitorInit();
 
 	return ret;
 }

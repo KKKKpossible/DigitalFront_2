@@ -26,4 +26,15 @@
 #define HW_LED_USE
 #define     HW_LED_CHANNEL_MAX         (1U)
 
+#define HW_ADC_USE
+#define HW_ADC_CHANNEL_MAX             (8U)
+
+#define HW_DMA_USE
+
+#define HW_MONITOR_USE
+#define     HW_MONITOR_CHANNEL_MAX     (10U)
+
+#define HW_SPI_USE
+#define     HW_SPI_CHANNEL_MAX         (1U)
+
 #endif /* SRC_HW_HW_DEF_H_ */
