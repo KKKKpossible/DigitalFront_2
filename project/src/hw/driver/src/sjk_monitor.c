@@ -25,43 +25,10 @@ static Monitor_t monitor_arr[DEF_MONITOR_CHANNEL_MAX] =
         };
 
 
-static bool MonitorReadBool(uint8_t ch)
-{
-    bool ret = true;
+static bool     MonitorReadBool   (uint8_t ch);
+static bool     MonitorWriteBool  (uint8_t ch, uint32_t data);
+static uint32_t MonitorReadUint32 (uint8_t ch);
 
-    switch(ch)
-    {
-
-    }
-
-    return ret;
-}
-
-static uint32_t MonitorReadUint32(uint8_t ch)
-{
-    uint32_t ret = true;
-
-    switch(ch)
-    {
-
-    }
-
-    return ret;
-}
-
-static bool MonitorWriteBool(uint8_t ch, uint32_t data)
-{
-    bool ret = true;
-
-    switch(ch)
-    {
-        default:
-            ret = false;
-            break;
-    }
-
-    return ret;
-}
 
 bool MonitorInit()
 {
@@ -220,3 +187,42 @@ bool MonitorWrite(uint8_t ch, uint32_t data)
     }
     return ret;
 }
+
+static bool MonitorReadBool(uint8_t ch)
+{
+    bool ret = true;
+
+    switch(ch)
+    {
+
+    }
+
+    return ret;
+}
+
+static bool MonitorWriteBool(uint8_t ch, uint32_t data)
+{
+    bool ret = true;
+
+    switch(ch)
+    {
+        default:
+            ret = false;
+            break;
+    }
+
+    return ret;
+}
+
+static uint32_t MonitorReadUint32(uint8_t ch)
+{
+    uint32_t ret = true;
+
+    switch(ch)
+    {
+
+    }
+
+    return ret;
+}
+

@@ -27,51 +27,12 @@ typedef struct Uart_t
 
 
 Uart_t uart_arr[HW_UART_CHANNEL_MAX];
-
-
 UART_HandleTypeDef huart1;
 
 
-static bool SjkUartInit(uint8_t ch)
-{
-    bool ret = true;
-
-    for(int i = 0; i < DEF_UART_CHANNEL_MAX; i++)
-    {
-        switch(i)
-        {
-            case DEF_UART_CHANNEL_0:
-                uart_arr[i].phuart_n = &huart1;
-                HAL_UART_Receive_IT(uart_arr[i].phuart_n, &uart_arr[i].data, 1);
-                break;
-            default:
-                break;
-        }
-    }
-
-    return ret;
-}
-
-static bool AutoUartInit(void)
-{
-    bool ret = true;
-
-    huart1.Instance          = USART1;
-    huart1.Init.BaudRate     = 115200;
-    huart1.Init.WordLength   = UART_WORDLENGTH_8B;
-    huart1.Init.StopBits     = UART_STOPBITS_1;
-    huart1.Init.Parity       = UART_PARITY_NONE;
-    huart1.Init.Mode         = UART_MODE_TX_RX;
-    huart1.Init.HwFlowCtl    = UART_HWCONTROL_NONE;
-    huart1.Init.OverSampling = UART_OVERSAMPLING_16;
-
-    if (HAL_UART_Init(&huart1) != HAL_OK)
-    {
-        Error_Handler();
-    }
-
-    return ret;
-}
+static bool SjkUartInit  (uint8_t ch);
+static bool AutoUartInit (void);
+static void UartSend     (uint8_t ch);
 
 bool UartInit(uint8_t ch)
 {
@@ -142,37 +103,6 @@ void HAL_UART_MspDeInit(UART_HandleTypeDef* uartHandle)
   }
 }
 
-static void UartSend(uint8_t ch)
-{
-    int left = 0;
-
-    switch(ch)
-    {
-        case DEF_UART_CHANNEL_0:
-            left = UartTxAvailable(ch);
-
-            if(left > 8)
-            {
-                left = 8;
-            }
-
-            HAL_StatusTypeDef status = HAL_UART_Transmit(uart_arr[ch].phuart_n, &uart_arr[ch].tx_buffer[uart_arr[ch].tx_tail], left, 10);
-
-            uint32_t time_out = millis();
-            while(status == HAL_BUSY)
-            {
-                status = HAL_UART_Transmit(uart_arr[ch].phuart_n, &uart_arr[ch].tx_buffer[uart_arr[ch].tx_tail], left, 10);
-                if(millis() - time_out > 10)
-                {
-                    break;
-                }
-            }
-            uart_arr[ch].tx_tail = (uart_arr[ch].tx_tail + left) % UART_BUFFER_LENGTH;
-            break;
-        default:
-            break;
-    }
-}
 
 bool UartWrite(uint8_t ch, uint8_t* data, uint16_t length)
 {
@@ -286,5 +216,77 @@ void HAL_UART_TxCpltCallback(UART_HandleTypeDef *huart)
             }
             break;
         }
+    }
+}
+static bool SjkUartInit(uint8_t ch)
+{
+    bool ret = true;
+
+    for(int i = 0; i < DEF_UART_CHANNEL_MAX; i++)
+    {
+        switch(i)
+        {
+            case DEF_UART_CHANNEL_0:
+                uart_arr[i].phuart_n = &huart1;
+                HAL_UART_Receive_IT(uart_arr[i].phuart_n, &uart_arr[i].data, 1);
+                break;
+            default:
+                break;
+        }
+    }
+
+    return ret;
+}
+
+static bool AutoUartInit(void)
+{
+    bool ret = true;
+
+    huart1.Instance          = USART1;
+    huart1.Init.BaudRate     = 115200;
+    huart1.Init.WordLength   = UART_WORDLENGTH_8B;
+    huart1.Init.StopBits     = UART_STOPBITS_1;
+    huart1.Init.Parity       = UART_PARITY_NONE;
+    huart1.Init.Mode         = UART_MODE_TX_RX;
+    huart1.Init.HwFlowCtl    = UART_HWCONTROL_NONE;
+    huart1.Init.OverSampling = UART_OVERSAMPLING_16;
+
+    if (HAL_UART_Init(&huart1) != HAL_OK)
+    {
+        Error_Handler();
+    }
+
+    return ret;
+}
+
+static void UartSend(uint8_t ch)
+{
+    int left = 0;
+
+    switch(ch)
+    {
+        case DEF_UART_CHANNEL_0:
+            left = UartTxAvailable(ch);
+
+            if(left > 8)
+            {
+                left = 8;
+            }
+
+            HAL_StatusTypeDef status = HAL_UART_Transmit(uart_arr[ch].phuart_n, &uart_arr[ch].tx_buffer[uart_arr[ch].tx_tail], left, 10);
+
+            uint32_t time_out = millis();
+            while(status == HAL_BUSY)
+            {
+                status = HAL_UART_Transmit(uart_arr[ch].phuart_n, &uart_arr[ch].tx_buffer[uart_arr[ch].tx_tail], left, 10);
+                if(millis() - time_out > 10)
+                {
+                    break;
+                }
+            }
+            uart_arr[ch].tx_tail = (uart_arr[ch].tx_tail + left) % UART_BUFFER_LENGTH;
+            break;
+        default:
+            break;
     }
 }

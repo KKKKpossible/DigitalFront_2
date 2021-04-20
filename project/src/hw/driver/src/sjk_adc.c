@@ -15,6 +15,7 @@ DMA_HandleTypeDef hdma_adc1;
 
 static uint16_t adc_data[8] = {0, };
 
+
 bool AdcInit(void)
 {
     bool ret = true;
