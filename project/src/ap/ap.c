@@ -46,7 +46,7 @@ bool ApMain(void)
 	if(millis() - tick > 100)
     {
         tick = millis();
-//        HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_12);
+        VvaWrite(DEF_VVA_CHANNEL_0, 3000);
     }
 
 	return ret;

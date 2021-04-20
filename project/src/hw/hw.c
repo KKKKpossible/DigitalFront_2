@@ -28,5 +28,9 @@ bool HwInit(void)
 
 	MonitorInit();
 
+    SpiInit(DEF_SPI_CHANNEL_0);
+
+	VvaInit(DEF_VVA_CHANNEL_0);
+
 	return ret;
 }

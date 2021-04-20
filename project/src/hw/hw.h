@@ -24,7 +24,8 @@ extern "C"{
 #include "sjk_adc.h"
 #include "sjk_dma.h"
 #include "sjk_monitor.h"
-
+#include "sjk_spi.h"
+#include "sjk_vva.h"
 
 bool HwInit(void);
 

@@ -21,9 +21,10 @@ extern "C"{
 #define DEF_SPI_CHANNEL_MAX HW_SPI_CHANNEL_MAX
 
 
-bool SpiInit  (void);
-bool SpiWrite (uint8_t ch, uint16_t* data);
-bool SpiRead  (uint8_t ch, uint16_t* buffer);
+bool SpiInit      (uint8_t ch);
+bool SpiWrite     (uint8_t ch, uint8_t* data, uint16_t size);
+bool SpiRead      (uint8_t ch, uint8_t* buffer, uint16_t size);
+bool SpiWriteRead (uint8_t ch, uint8_t* buffer, uint16_t size);
 
 
 #endif

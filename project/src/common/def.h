@@ -71,6 +71,10 @@ extern "C"{
 #define DEF_MONITOR_FAULT          (DEF_MONITOR_CHANNEL_9)
 
 #define DEF_SPI_CHANNEL_0          (0U)
+#define DEF_SPI_SS_CHANNEL_0       (DEF_GPIO_OUTPUT_CHANNEL_2)
+
+#define DEF_VVA_CHANNEL_0          (0U)
+
 
 #ifdef __cplusplus
 }

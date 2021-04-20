@@ -37,4 +37,7 @@
 #define HW_SPI_USE
 #define     HW_SPI_CHANNEL_MAX         (1U)
 
+#define HW_VVA_USE
+#define     HW_VVA_CHANNEL_MAX         (1U)
+
 #endif /* SRC_HW_HW_DEF_H_ */
