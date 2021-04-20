@@ -18,10 +18,39 @@ extern Parse_t parse_var;
 static bool ParseProcedure(void)
 {
     bool ret = 0;
-    bool catched = false;
+    bool catched_cmd = false;
+    bool checked_divider = false;
+
+    char* pcheck[2] = {NULL, NULL};
+    pcheck[0] = (char*)&parse_var.buffer[0];
+    char divider[] = " \t\0";
+    int index = 0;
+
+
+    for(; parse_var.buffer[index] != '\0'; index++)
+    {
+        if(checked_divider == true)
+        {
+            break;
+        }
+        for(int i = 0; divider[i] != '\0'; i++)
+        {
+            if(parse_var.buffer[index] == divider[i])
+            {
+                parse_var.buffer[index] = '\0';
+                if(parse_var.buffer[index + 1] != '\0')
+                {
+                    pcheck[1] = (char*)(&parse_var.buffer[index + 1]);
+                    checked_divider = true;
+                    break;
+                }
+            }
+        }
+    }
+
     for(int i = 0; cli_arr[i].name[0] != '\0'; i++)
     {
-        if(catched == true)
+        if(catched_cmd == true)
         {
             break;
         }
@@ -29,10 +58,17 @@ static bool ParseProcedure(void)
         int j = 0;
         while(cli_arr[i].cmd[j][0] != '\0')
         {
-            if(strcmp((const char*)parse_var.buffer, cli_arr[i].cmd[j]) == 0)
+            if(strcmp((const char*)(pcheck[0]), cli_arr[i].cmd[j]) == 0)
             {
-                cli_arr[i].fp();
-                catched = true;
+                if(pcheck[1] == NULL)
+                {
+                    cli_arr[i].fp((uint8_t*)"");
+                }
+                else
+                {
+                    cli_arr[i].fp((uint8_t*)(pcheck[1]));
+                }
+                catched_cmd = true;
                 break;
             }
             j++;

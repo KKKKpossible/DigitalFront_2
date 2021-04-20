@@ -11,6 +11,8 @@
 
 
 #define VOLTAGE_DB_TABLE_MAX (31U)
+#define DEFAULT_DB_SET_VAL   (0U)
+
 
 typedef struct Vva_t
 {
@@ -19,11 +21,9 @@ typedef struct Vva_t
 }Vva_t;
 
 
-Vva_t vva_var;
-
-uint16_t voltage_per_db_arr[VOLTAGE_DB_TABLE_MAX];
-
-uint8_t now_tr_data_ad5592r[2];
+Vva_t     vva_var;
+AD5592R_t ad5592r_var;
+uint16_t  voltage_per_db_arr[VOLTAGE_DB_TABLE_MAX];
 
 static void CalculateVvaToSpiArr(uint8_t ch, uint16_t db_100multiple, uint8_t* buffer)
 {
@@ -32,9 +32,12 @@ static void CalculateVvaToSpiArr(uint8_t ch, uint16_t db_100multiple, uint8_t* b
         case DEF_VVA_CHANNEL_0:
             if(db_100multiple > 30 * 100)
             {
-                buffer[0] = now_tr_data_ad5592r[0];
-                buffer[1] = now_tr_data_ad5592r[1];
+                buffer[0] = ad5592r_var.now_tr_data[0];
+                buffer[1] = ad5592r_var.now_tr_data[1];
+                break;
             }
+            ad5592r_var.db_100multiple = db_100multiple;
+
             uint16_t voltage_buff = voltage_per_db_arr[db_100multiple / 100];
 
             if((db_100multiple % 100 != 0) || (db_100multiple % 10 != 0))
@@ -55,13 +58,15 @@ static void CalculateVvaToSpiArr(uint8_t ch, uint16_t db_100multiple, uint8_t* b
 
             buffer[0] = tr_buffer[0];
             buffer[1] = tr_buffer[1];
+
+            ad5592r_var.now_tr_data[0] = tr_buffer[0];
+            ad5592r_var.now_tr_data[1] = tr_buffer[1];
             break;
         default:
-            buffer[0] = now_tr_data_ad5592r[0];
-            buffer[1] = now_tr_data_ad5592r[1];
+            buffer[0] = ad5592r_var.now_tr_data[0];
+            buffer[1] = ad5592r_var.now_tr_data[1];
             break;
     }
-
 }
 
 
@@ -78,7 +83,7 @@ bool VvaInit(uint8_t ch)
             {
                 voltage_per_db_arr[i] = vva_var.offset + vva_var.ratio * i;
             }
-
+            VvaWrite(ch, DEFAULT_DB_SET_VAL);
             break;
         default:
             ret = false;
@@ -110,9 +115,11 @@ bool VvaWrite(uint8_t ch, uint16_t db_100multiple)
 uint16_t VvaRead(uint8_t ch)
 {
     uint16_t ret = 0;
+
     switch(ch)
     {
         case DEF_VVA_CHANNEL_0:
+            ret = ad5592r_var.db_100multiple;
             break;
         default:
             break;

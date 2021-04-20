@@ -20,23 +20,23 @@ char* cli_cmd_mode_cmd[] =
         };
 char* cli_log_on_cmd[] =
         {
-                "log on"    , "Log On"    , "Log on"    , "LG1", "\0"
+                "logon"    , "LogOn"    , "Logon"    , "LG1", "\0"
         };
 char* cli_log_off_cmd[] =
         {
-                "log off"   , "Log Off"   , "Log off"   , "LG0", "\0"
+                "logoff"   , "LogOff"   , "Logoff"   , "LG0", "\0"
         };
 char* cli_log_toggle_cmd[] =
         {
-                "log toggle", "Log Toggle", "Log toggle", "LGT", "\0"
+                "logtoggle", "LogToggle", "Logtoggle", "LGT", "\0"
         };
 char* cli_log_read_cmd[] =
         {
-                "log read"  , "Log Read"  , "Log read"  , "LR" , "\0"
+                "logread"  , "LogRead"  , "Logread"  , "LR" , "\0"
         };
 
 // cli cmd method
-void CliCmdModeToggle(void)
+void CliCmdModeToggle(uint8_t* data)
 {
     if(parse_var.cmd_mode_on == true)
     {
@@ -56,7 +56,7 @@ void CliCmdModeToggle(void)
     }
 }
 
-void CliLogOn(void)
+void CliLogOn(uint8_t* data)
 {
     if(parse_var.log_on == false)
     {
@@ -68,7 +68,7 @@ void CliLogOn(void)
     }
 }
 
-void CliLogOff(void)
+void CliLogOff(uint8_t* data)
 {
     if(parse_var.log_on == true)
     {
@@ -80,19 +80,19 @@ void CliLogOff(void)
     }
 }
 
-void CliLogToggle(void)
+void CliLogToggle(uint8_t* data)
 {
     if(parse_var.log_on == true)
     {
-        CliLogOff();
+        CliLogOff(data);
     }
     else
     {
-        CliLogOn();
+        CliLogOn(data);
     }
 }
 
-void CliLogRead(void)
+void CliLogRead(uint8_t* data)
 {
     if(parse_var.log_on == true)
     {
@@ -108,26 +108,26 @@ void CliLogRead(void)
 // led cmd string arr
 char* cli_led_on_cmd[] =
         {
-                "led on"    , "Led On"    ,   "Led on"    , "L1", "\0"
+                "ledon"    , "LedOn"    ,   "Ledon"    , "L1", "\0"
         };
 
 char* cli_led_off_cmd[] =
         {
-                "led off"   , "Led Off"   ,   "Led off"   , "L0", "\0"
+                "ledoff"   , "Led Off"   ,   "Ledoff"   , "L0", "\0"
         };
 
 char* cli_led_toggle_cmd[] =
         {
-                "led toggle", "Led Toggle",   "Led toggle", "LT", "\0"
+                "ledtoggle", "LedToggle",   "Ledtoggle", "LT", "\0"
         };
 
 char* cli_led_read_cmd[] =
         {
-                "led read"  , "Led Read"  ,   "Led read"  , "LR", "\0"
+                "ledread"  , "LedRead"  ,   "Ledread"  , "LR", "\0"
         };
 
 // led cmd method
-void CliLedOn(void)
+void CliLedOn(uint8_t* data)
 {
     bool result = LedOn(DEF_LED_CHANNEL_0);
 
@@ -144,7 +144,7 @@ void CliLedOn(void)
     }
 }
 
-void CliLedOff(void)
+void CliLedOff(uint8_t* data)
 {
     bool result = LedOff(DEF_LED_CHANNEL_0);
 
@@ -161,7 +161,7 @@ void CliLedOff(void)
     }
 }
 
-void CliLedToggle(void)
+void CliLedToggle(uint8_t* data)
 {
     bool result = LedToggle(DEF_LED_CHANNEL_0);
 
@@ -178,7 +178,7 @@ void CliLedToggle(void)
     }
 }
 
-void CliLedRead(void)
+void CliLedRead(uint8_t* data)
 {
 
     if(parse_var.log_on == true)

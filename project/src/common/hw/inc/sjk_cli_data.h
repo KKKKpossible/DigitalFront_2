@@ -29,12 +29,12 @@ extern char* cli_log_toggle_cmd [];
 extern char* cli_log_read_cmd   [];
 
 // cli cmd method
-void CliCmdModeToggle (void);
+void CliCmdModeToggle (uint8_t* data);
 
-void CliLogOn         (void);
-void CliLogOff        (void);
-void CliLogToggle     (void);
-void CliLogRead       (void);
+void CliLogOn         (uint8_t* data);
+void CliLogOff        (uint8_t* data);
+void CliLogToggle     (uint8_t* data);
+void CliLogRead       (uint8_t* data);
 
 // led cmd string arr
 extern char* cli_led_on_cmd     [];
@@ -42,10 +42,10 @@ extern char* cli_led_off_cmd    [];
 extern char* cli_led_toggle_cmd [];
 extern char* cli_led_read_cmd   [];
 // led cmd method
-void CliLedOn     (void);
-void CliLedOff    (void);
-void CliLedToggle (void);
-void CliLedRead   (void);
+void CliLedOn     (uint8_t* data);
+void CliLedOff    (uint8_t* data);
+void CliLedToggle (uint8_t* data);
+void CliLedRead   (uint8_t* data);
 
 
 #endif

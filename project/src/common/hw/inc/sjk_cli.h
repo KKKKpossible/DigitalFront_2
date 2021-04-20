@@ -29,7 +29,7 @@ typedef struct Cli_t
 {
     const char* name;
     char**      cmd;
-    void  (*fp)(void);
+    void  (*fp)(uint8_t* data);
 }Cli_t;
 
 
