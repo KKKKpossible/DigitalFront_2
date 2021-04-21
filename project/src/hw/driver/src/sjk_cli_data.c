@@ -7,6 +7,7 @@
 
 
 #include "sjk_cli_data.h"
+#include "stdio.h"
 
 
 extern Cli_t   cli_arr[];
@@ -36,27 +37,42 @@ char* cli_log_read_cmd[] =
         };
 
 // cli cmd method
-void CliCmdModeToggle(uint8_t* data)
+void CliCmdModeToggle(uint8_t ch, char* fmt, ...)
 {
-    if(parse_var.cmd_mode_on == true)
+    char buf[256] = {0, };
+    va_list args;
+
+    va_start(args, fmt);
+    vsnprintf(buf, 256, fmt, args);
+
+    switch(ch)
     {
-        parse_var.cmd_mode_on = false;
-        if(parse_var.log_on == true)
-        {
-            UartWrite(DEF_UART_CHANNEL_0, (uint8_t*)"CMD MODE OFF\r\n", 14);
-        }
+        case DEF_UART_CHANNEL_0:
+            if(parse_var.cmd_mode_on == true)
+            {
+                parse_var.cmd_mode_on = false;
+                if(parse_var.log_on == true)
+                {
+                    UartWrite(DEF_UART_CHANNEL_0, (uint8_t*)"CMD MODE OFF\r\n", 14);
+                }
+            }
+            else
+            {
+                parse_var.cmd_mode_on = true;
+                if(parse_var.log_on == true)
+                {
+                    UartWrite(DEF_UART_CHANNEL_0, (uint8_t*)"CMD MODE ON\r\n", 13);
+                }
+            }
+            break;
+        default:
+            break;
     }
-    else
-    {
-        parse_var.cmd_mode_on = true;
-        if(parse_var.log_on == true)
-        {
-            UartWrite(DEF_UART_CHANNEL_0, (uint8_t*)"CMD MODE ON\r\n", 13);
-        }
-    }
+
+    va_end(args);
 }
 
-void CliLogOn(uint8_t* data)
+void CliLogOn(uint8_t ch, char* fmt, ...)
 {
     if(parse_var.log_on == false)
     {
@@ -68,7 +84,7 @@ void CliLogOn(uint8_t* data)
     }
 }
 
-void CliLogOff(uint8_t* data)
+void CliLogOff(uint8_t ch, char* fmt, ...)
 {
     if(parse_var.log_on == true)
     {
@@ -80,19 +96,19 @@ void CliLogOff(uint8_t* data)
     }
 }
 
-void CliLogToggle(uint8_t* data)
+void CliLogToggle(uint8_t ch, char* fmt, ...)
 {
     if(parse_var.log_on == true)
     {
-        CliLogOff(data);
+        CliLogOff(ch, "%c", '\0');
     }
     else
     {
-        CliLogOn(data);
+        CliLogOn(ch, "%c", '\0');
     }
 }
 
-void CliLogRead(uint8_t* data)
+void CliLogRead(uint8_t ch, char* fmt, ...)
 {
     if(parse_var.log_on == true)
     {
@@ -127,7 +143,7 @@ char* cli_led_read_cmd[] =
         };
 
 // led cmd method
-void CliLedOn(uint8_t* data)
+void CliLedOn(uint8_t ch, char* fmt, ...)
 {
     bool result = LedOn(DEF_LED_CHANNEL_0);
 
@@ -144,7 +160,7 @@ void CliLedOn(uint8_t* data)
     }
 }
 
-void CliLedOff(uint8_t* data)
+void CliLedOff(uint8_t ch, char* fmt, ...)
 {
     bool result = LedOff(DEF_LED_CHANNEL_0);
 
@@ -161,24 +177,39 @@ void CliLedOff(uint8_t* data)
     }
 }
 
-void CliLedToggle(uint8_t* data)
+void CliLedToggle(uint8_t ch, char* fmt, ...)
 {
+    char buf[256] = {0, };
+    va_list args;
+
+    va_start(args, fmt);
+    vsnprintf(buf, 256, fmt, args);
+
     bool result = LedToggle(DEF_LED_CHANNEL_0);
 
-    if(parse_var.log_on == true)
+    switch(ch)
     {
-        if(result == true)
-        {
-            UartWrite(DEF_UART_CHANNEL_0, (uint8_t*)"LED TOGGLE\r\n", strlen("LED TOGGLE\r\n"));
-        }
-        else
-        {
-            UartWrite(DEF_UART_CHANNEL_0, (uint8_t*)"ERROR\r\n", strlen("ERROR\r\n"));
-        }
+        case DEF_UART_CHANNEL_0:
+            if(parse_var.log_on == true)
+            {
+                if(result == true)
+                {
+                    UartWrite(DEF_UART_CHANNEL_0, (uint8_t*)"LED TOGGLE\r\n", strlen("LED TOGGLE\r\n"));
+                }
+                else
+                {
+                    UartWrite(DEF_UART_CHANNEL_0, (uint8_t*)"ERROR\r\n", strlen("ERROR\r\n"));
+                }
+            }
+            break;
+        default:
+            break;
     }
+
+    va_end(args);
 }
 
-void CliLedRead(uint8_t* data)
+void CliLedRead(uint8_t ch, char* fmt, ...)
 {
 
     if(parse_var.log_on == true)

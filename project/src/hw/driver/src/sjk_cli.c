@@ -137,17 +137,29 @@ void Parse(uint8_t data)
 
 static void CheckDividerArgOne(char** pcheck)
 {
-    int  index           = 0;
-    bool checked_divider = false;
-    char divider[]       = " \t\0";
+    int      index              = 0;
+    char     divider[]          = " \t\0";
+    uint16_t count_divider      = 0;
+    uint16_t next_index_pcheck  = count_divider + 1;
 
     pcheck[0] = (char*)&parse_var.buffer[0];
 
     for(; parse_var.buffer[index] != '\0'; index++)
     {
-        if(checked_divider == true)
+        if(count_divider != 0)
         {
-            break;
+            for(int i = 0; divider[i] != '\0'; i++)
+            {
+                if(parse_var.buffer[index] == divider[i])
+                {
+                    parse_var.buffer[index] = '\0';
+                    if(parse_var.buffer[index + 1] != '\0')
+                    {
+                        pcheck[next_index_pcheck] = (char*)(&parse_var.buffer[index + 1]);
+                        break;
+                    }
+                }
+            }
         }
         for(int i = 0; divider[i] != '\0'; i++)
         {
@@ -156,8 +168,9 @@ static void CheckDividerArgOne(char** pcheck)
                 parse_var.buffer[index] = '\0';
                 if(parse_var.buffer[index + 1] != '\0')
                 {
-                    pcheck[1] = (char*)(&parse_var.buffer[index + 1]);
-                    checked_divider = true;
+                    pcheck[next_index_pcheck] = (char*)(&parse_var.buffer[index + 1]);
+                    count_divider++;
+                    next_index_pcheck  = count_divider + 1;
                     break;
                 }
             }
@@ -183,11 +196,18 @@ static void CmdCatchWithExecute(char** pcheck)
             {
                 if(pcheck[1] == NULL)
                 {
-                    cli_arr[i].fp((uint8_t*)"");
+                    cli_arr[i].fp(DEF_UART_CHANNEL_0 , "%c", '\0');
                 }
                 else
                 {
-                    cli_arr[i].fp((uint8_t*)(pcheck[1]));
+                    if(pcheck[2] == NULL)
+                    {
+                        cli_arr[i].fp(DEF_UART_CHANNEL_0, "%s", pcheck[1]);
+                    }
+                    else
+                    {
+                        cli_arr[i].fp(DEF_UART_CHANNEL_0, "%s %s", pcheck[1], pcheck[2]);
+                    }
                 }
                 catched_cmd = true;
                 break;
@@ -201,7 +221,7 @@ static bool ParseProcedure(void)
 {
     bool ret = 0;
 
-    char* pcheck[2] = {NULL, NULL};
+    char* pcheck[3] = {NULL, NULL, NULL};
     CheckDividerArgOne(pcheck);
     CmdCatchWithExecute(pcheck);
 
