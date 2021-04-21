@@ -8,11 +8,16 @@
 
 #include "sjk_vva.h"
 #include "sjk_spi.h"
+#include "sjk_flash.h"
 
 
 #define VOLTAGE_DB_TABLE_MAX (31U)
 #define DEFAULT_DB_SET_VAL   (0U)
 
+#define VVA_SAVE_CHECK_ADDR  (0x8000000 + (62 * 1024))
+
+#define SAVE_KEY_VALUE_0     (118U)
+#define SAVE_KEY_VALUE_1     (96U)
 
 typedef struct Vva_t
 {
@@ -25,23 +30,44 @@ Vva_t     vva_var;
 AD5592R_t ad5592r_var;
 uint16_t  voltage_per_db_arr[VOLTAGE_DB_TABLE_MAX];
 
-
 static void CalculateVvaToSpiArr(uint8_t ch, uint16_t db_100multiple, uint8_t* buffer);
 
 
 bool VvaInit(uint8_t ch)
 {
     bool ret = true;
+    uint8_t flash_load_buff[(31 * 2) + 2] = {0, };
 
     switch(ch)
     {
         case DEF_VVA_CHANNEL_0:
             vva_var.offset = 0;
             vva_var.ratio  = 100;
-            for(int i = 0; i < VOLTAGE_DB_TABLE_MAX; i++)
+
+            FlashRead(VVA_SAVE_CHECK_ADDR, flash_load_buff, (VOLTAGE_DB_TABLE_MAX * 2) + 2);
+            if((flash_load_buff[0] == SAVE_KEY_VALUE_0) && (flash_load_buff[1] == SAVE_KEY_VALUE_1))
             {
-                voltage_per_db_arr[i] = vva_var.offset + vva_var.ratio * i;
+                for(int i = 0; i < VOLTAGE_DB_TABLE_MAX; i++)
+                {
+                    voltage_per_db_arr[i]  = 0;
+                    voltage_per_db_arr[i] |= flash_load_buff[2 * i + 2];
+                    voltage_per_db_arr[i] |= flash_load_buff[(2 * i) + 1 + 2] << 8;
+                }
             }
+            else
+            {
+                uint8_t p_keydata[2] = {SAVE_KEY_VALUE_0, SAVE_KEY_VALUE_1};
+
+                FlashErase(VVA_SAVE_CHECK_ADDR, (VOLTAGE_DB_TABLE_MAX * 2) + 2);
+                FlashWrite(VVA_SAVE_CHECK_ADDR, p_keydata, 2);
+
+                for(int i = 0; i < VOLTAGE_DB_TABLE_MAX; i++)
+                {
+                    voltage_per_db_arr[i]  = vva_var.offset + vva_var.ratio * i;
+                }
+                FlashWrite(VVA_SAVE_CHECK_ADDR + 2, (uint8_t*)voltage_per_db_arr, VOLTAGE_DB_TABLE_MAX * 2);
+            }
+
             VvaWrite(ch, DEFAULT_DB_SET_VAL);
             break;
         default:
@@ -84,6 +110,18 @@ uint16_t VvaRead(uint8_t ch)
             break;
     }
 
+    return ret;
+}
+
+bool VvaWriteVoltage(uint8_t ch, uint16_t voltage)
+{
+    bool ret = true;
+    return ret;
+}
+
+uint16_t VvaReadVoltage(uint8_t ch)
+{
+    uint16_t ret = true;
     return ret;
 }
 

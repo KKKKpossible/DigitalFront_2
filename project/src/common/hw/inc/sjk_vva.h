@@ -28,10 +28,11 @@ typedef struct AD5592R_t
 }AD5592R_t;
 
 
-bool     VvaInit  (uint8_t ch);
-bool     VvaWrite (uint8_t ch, uint16_t db_100multiple);
-uint16_t VvaRead  (uint8_t ch);
-
+bool     VvaInit         (uint8_t ch);
+bool     VvaWrite        (uint8_t ch, uint16_t db_100multiple);
+uint16_t VvaRead         (uint8_t ch);
+bool     VvaWriteVoltage (uint8_t ch, uint16_t voltage);
+uint16_t VvaReadVoltage  (uint8_t ch);
 
 #endif
 

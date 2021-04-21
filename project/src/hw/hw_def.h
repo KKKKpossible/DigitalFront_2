@@ -40,4 +40,8 @@
 #define HW_VVA_USE
 #define     HW_VVA_CHANNEL_MAX         (1U)
 
+#define HW_FLASH_USE
+#define     HW_FLASH_CHANNEL_MAX       (1U)
+
+
 #endif /* SRC_HW_HW_DEF_H_ */

@@ -232,3 +232,64 @@ void CliLedRead(uint8_t ch, char* fmt, ...)
         }
     }
 }
+
+// vva cmd string arr
+char* cli_vva_dbset[] =
+        {
+                "vvaset", "VVASet", "VVASET", "VVS", "\0"
+        };
+
+char* cli_vva_dbread[] =
+        {
+                "vvaread", "VVARead", "VVAREAD", "VVR", "\0"
+        };
+
+char* cli_vva_tableset[] =
+        {
+                "vvatableset", "VVATableSet", "VVATABLESET", "VVTS", "\0"
+        };
+
+char* cli_vva_tableread[] =
+        {
+                "vvatableread", "VVATableRead", "VVATABLEREAD", "VVTR", "\0"
+        };
+
+char* cli_vva_voltage_set  [] =
+        {
+                "vvavoltset", "VVAVoltSet", "VVAVOLTSET", "VVVS", "\0"
+        };
+char* cli_vva_voltage_read [] =
+        {
+                "vvavoltread", "VVAVoltRead", "VVAVOLTREAD", "VVVR", "\0"
+        };
+
+//vva cmd method
+void CliVvaDbSet(uint8_t ch, char* fmt, ...)
+{
+
+}
+
+void CliVvaDbRead(uint8_t ch, char* fmt, ...)
+{
+
+}
+
+void CliVvaTableSet(uint8_t ch, char* fmt, ...)
+{
+
+}
+
+void CliVvaTableRead(uint8_t ch, char* fmt, ...)
+{
+
+}
+
+void CliVvaVoltSet(uint8_t ch, char* fmt, ...)
+{
+
+}
+
+void CliVvaVoltRead(uint8_t ch, char* fmt, ...)
+{
+
+}

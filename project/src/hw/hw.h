@@ -26,6 +26,8 @@ extern "C"{
 #include "sjk_monitor.h"
 #include "sjk_spi.h"
 #include "sjk_vva.h"
+#include "sjk_flash.h"
+
 
 bool HwInit(void);
 
