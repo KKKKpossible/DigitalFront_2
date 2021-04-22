@@ -46,7 +46,6 @@ bool ApMain(void)
 	if(millis() - tick > 100)
     {
         tick = millis();
-        VvaWrite(DEF_VVA_CHANNEL_0, 3000);
     }
 
 	return ret;

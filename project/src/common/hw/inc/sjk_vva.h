@@ -9,7 +9,7 @@
 #define SRC_COMMON_HW_INC_SJK_VVA_H_
 
 
-#ifdef _cplusplus
+#ifdef __cplusplus
 extern "C"{
 #endif
 
@@ -28,16 +28,18 @@ typedef struct AD5592R_t
 }AD5592R_t;
 
 
-bool     VvaInit         (uint8_t ch);
-bool     VvaWrite        (uint8_t ch, uint16_t db_100multiple);
-uint16_t VvaRead         (uint8_t ch);
-bool     VvaWriteVoltage (uint8_t ch, uint16_t voltage);
-uint16_t VvaReadVoltage  (uint8_t ch);
+bool     VvaInit        (uint8_t ch);
+bool     VvaSendDb      (uint8_t ch, int db_100multiple);
+bool     VvaDbRead      (uint8_t ch, uint16_t* db_buff);
+bool     VvaSendVoltage (uint8_t ch, uint16_t voltage);
+bool     VvaReadVoltage (uint8_t ch, uint16_t* mv_buff);
+bool     VvaTableLoad   (uint8_t ch);
+bool     VvaTableSave   (uint8_t ch);
 
 #endif
 
 
-#ifdef _cplusplus
+#ifdef __cplusplus
 }
 #endif
 

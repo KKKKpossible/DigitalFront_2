@@ -273,13 +273,14 @@ static void UartSend(uint8_t ch)
                 left = 8;
             }
 
-            HAL_StatusTypeDef status = HAL_UART_Transmit(uart_arr[ch].phuart_n, &uart_arr[ch].tx_buffer[uart_arr[ch].tx_tail], left, 10);
+            HAL_StatusTypeDef status;
+            status = HAL_UART_Transmit_IT(uart_arr[ch].phuart_n, &uart_arr[ch].tx_buffer[uart_arr[ch].tx_tail], left);
 
-            uint32_t time_out = millis();
-            while(status == HAL_BUSY)
+            uint32_t mil = millis();
+            while(status != HAL_OK)
             {
-                status = HAL_UART_Transmit(uart_arr[ch].phuart_n, &uart_arr[ch].tx_buffer[uart_arr[ch].tx_tail], left, 10);
-                if(millis() - time_out > 10)
+                status = HAL_UART_Transmit_IT(uart_arr[ch].phuart_n, &uart_arr[ch].tx_buffer[uart_arr[ch].tx_tail], left);
+                if(millis() - mil > 10)
                 {
                     break;
                 }

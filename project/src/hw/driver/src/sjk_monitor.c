@@ -123,7 +123,6 @@ bool MonitorRead(uint8_t ch, uint32_t* retbuff)
             *retbuff = MonitorReadUint32(ch);
             break;
         case DEF_MONITOR_INT_ATTEN_0:
-            *retbuff = VvaRead(DEF_VVA_CHANNEL_0);
             break;
         case DEF_MONITOR_EXT_SWITCH_0:
             *retbuff = MonitorReadBool(ch);
@@ -167,7 +166,6 @@ bool MonitorWrite(uint8_t ch, uint32_t data)
             ret = false;
             break;
         case DEF_MONITOR_INT_ATTEN_0:
-            VvaWrite(DEF_VVA_CHANNEL_0, data);
             break;
         case DEF_MONITOR_EXT_SWITCH_0:
             ret = false;

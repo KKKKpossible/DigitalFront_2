@@ -55,12 +55,12 @@ extern char* cli_vva_tableread    [];
 extern char* cli_vva_voltage_set  [];
 extern char* cli_vva_voltage_read [];
 //vva cmd method
-void CliVvaDbSet     (uint8_t ch, char* fmt, ...);
-void CliVvaDbRead    (uint8_t ch, char* fmt, ...);
-void CliVvaTableSet  (uint8_t ch, char* fmt, ...);
-void CliVvaTableRead (uint8_t ch, char* fmt, ...);
-void CliVvaVoltSet   (uint8_t ch, char* fmt, ...);
-void CliVvaVoltRead  (uint8_t ch, char* fmt, ...);
+void CliVvaDbSet       (uint8_t ch, char* fmt, ...);
+void CliVvaDbRead      (uint8_t ch, char* fmt, ...);
+void CliVvaTableSet    (uint8_t ch, char* fmt, ...);
+void CliVvaTableRead   (uint8_t ch, char* fmt, ...);
+void CliVvaMiliVoltSet (uint8_t ch, char* fmt, ...);
+void CliVvaVoltRead    (uint8_t ch, char* fmt, ...);
 
 
 #endif

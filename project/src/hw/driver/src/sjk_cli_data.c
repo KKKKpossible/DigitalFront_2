@@ -7,7 +7,6 @@
 
 
 #include "sjk_cli_data.h"
-#include "stdio.h"
 
 
 extern Cli_t   cli_arr[];
@@ -236,42 +235,141 @@ void CliLedRead(uint8_t ch, char* fmt, ...)
 // vva cmd string arr
 char* cli_vva_dbset[] =
         {
-                "vvaset", "VVASet", "VVASET", "VVS", "\0"
+                "vvadbset"     , "VVADbSet"     , "VVADBSET"     , "VVDS" , "\0"
         };
 
 char* cli_vva_dbread[] =
         {
-                "vvaread", "VVARead", "VVAREAD", "VVR", "\0"
+                "vvadbread"    , "VVADbRead"    , "VVADBREAD"    , "VVDR" , "\0"
         };
 
 char* cli_vva_tableset[] =
         {
-                "vvatableset", "VVATableSet", "VVATABLESET", "VVTS", "\0"
+                "vvatableset"  , "VVATableSet"  , "VVATABLESET"  , "VVTS" , "\0"
         };
 
 char* cli_vva_tableread[] =
         {
-                "vvatableread", "VVATableRead", "VVATABLEREAD", "VVTR", "\0"
+                "vvatableread" , "VVATableRead" , "VVATABLEREAD" , "VVTR" , "\0"
         };
 
-char* cli_vva_voltage_set  [] =
+char* cli_vva_voltage_set[] =
         {
-                "vvavoltset", "VVAVoltSet", "VVAVOLTSET", "VVVS", "\0"
+                "vvamilvoltset", "VVAMilVoltSet", "VVAMILVOLTSET", "VVMVS", "\0"
         };
-char* cli_vva_voltage_read [] =
+char* cli_vva_voltage_read[] =
         {
-                "vvavoltread", "VVAVoltRead", "VVAVOLTREAD", "VVVR", "\0"
+                "vvavoltread"  , "VVAVoltRead"  , "VVAVOLTREAD"  , "VVVR" , "\0"
         };
 
 //vva cmd method
 void CliVvaDbSet(uint8_t ch, char* fmt, ...)
 {
+    char buf[256] = {0, };
+    va_list args;
 
+    va_start(args, fmt);
+    vsnprintf(buf, 256, fmt, args);
+
+    uint16_t var = 0;
+
+    for(int i = 0; buf[i] != '\0'; i++)
+    {
+        if(buf[i] == '.')
+        {
+            if(i < 255)
+            {
+                buf[i] = '\0';
+                var = atoi(buf) * 100;
+
+                if(i + 1 + 3 < 255)
+                {
+                    buf[i + 1 + 3] = '\0';
+                    uint16_t var_under = atoi(&buf[i + 1]);
+                    if(var_under < 10)
+                    {
+                        var_under *= 10;
+                    }
+                    var += var_under;
+                }
+            }
+            else if(i == 255)
+            {
+                buf[i] = '\0';
+                var = atoi(buf) * 100;
+            }
+        }
+    }
+
+    bool result = VvaSendDb(DEF_VVA_CHANNEL_0, var);
+
+    switch(ch)
+    {
+        case DEF_UART_CHANNEL_0:
+            if(parse_var.log_on == true)
+            {
+                if(result == true)
+                {
+                    UartWrite(DEF_UART_CHANNEL_0, (uint8_t*)"VVA DB SET\r\n", strlen("VVA DB SET\r\n"));
+                }
+                else
+                {
+                    UartWrite(DEF_UART_CHANNEL_0, (uint8_t*)"ERROR\r\n", strlen("ERROR\r\n"));
+                }
+            }
+            break;
+        default:
+            break;
+    }
+
+    va_end(args);
 }
 
 void CliVvaDbRead(uint8_t ch, char* fmt, ...)
 {
+    char buf[256] = {0, };
+    va_list args;
 
+    va_start(args, fmt);
+    vsnprintf(buf, 256, fmt, args);
+
+    uint16_t value = 0;
+    bool result = VvaDbRead(DEF_VVA_CHANNEL_0, &value);
+
+    switch(ch)
+    {
+        case DEF_UART_CHANNEL_0:
+            if(parse_var.log_on == true)
+            {
+                if(result == true)
+                {
+                    char buffer[30] = {0, };
+                    uint16_t overpoint = 0;
+                    uint16_t underpoint = 0;
+
+                    overpoint  = value / 100;
+                    underpoint = value - (overpoint * 100);
+                    if(underpoint < 10)
+                    {
+                        sprintf(buffer, "VVA DB READ %d.0%d\r\n", overpoint, underpoint);
+                    }
+                    else
+                    {
+                        sprintf(buffer, "VVA DB READ %d.%d\r\n", overpoint, underpoint);
+                    }
+                    UartWrite(DEF_UART_CHANNEL_0, (uint8_t*)buffer, strlen(buffer));
+                }
+                else
+                {
+                    UartWrite(DEF_UART_CHANNEL_0, (uint8_t*)"ERROR\r\n", strlen("ERROR\r\n"));
+                }
+            }
+            break;
+        default:
+            break;
+    }
+
+    va_end(args);
 }
 
 void CliVvaTableSet(uint8_t ch, char* fmt, ...)
@@ -284,12 +382,76 @@ void CliVvaTableRead(uint8_t ch, char* fmt, ...)
 
 }
 
-void CliVvaVoltSet(uint8_t ch, char* fmt, ...)
+void CliVvaMiliVoltSet(uint8_t ch, char* fmt, ...)
 {
+    char buf[256] = {0, };
+    va_list args;
 
+    va_start(args, fmt);
+    vsnprintf(buf, 256, fmt, args);
+
+    bool result = VvaSendVoltage(DEF_VVA_CHANNEL_0, atoi(buf));
+
+    switch(ch)
+    {
+        case DEF_UART_CHANNEL_0:
+            if(parse_var.log_on == true)
+            {
+                if(result == true)
+                {
+                    UartWrite(DEF_UART_CHANNEL_0, (uint8_t*)"VVA MILLI VOLT SET\r\n", strlen("VVA MILLI VOLT SET\r\n"));
+                }
+                else
+                {
+                    UartWrite(DEF_UART_CHANNEL_0, (uint8_t*)"ERROR\r\n", strlen("ERROR\r\n"));
+                }
+            }
+            break;
+        default:
+            break;
+    }
+
+    va_end(args);
 }
 
 void CliVvaVoltRead(uint8_t ch, char* fmt, ...)
 {
+    char buf[256] = {0, };
+    va_list args;
 
+    va_start(args, fmt);
+    vsnprintf(buf, 256, fmt, args);
+
+    uint16_t value = 0;
+    bool result = VvaReadVoltage(DEF_VVA_CHANNEL_0, &value);
+
+    float f_value = value * 3300.0 / 4095.0;
+    value = f_value;
+    if(f_value - (int)(f_value) > 0.5)
+    {
+        value += 1;
+    }
+
+    switch(ch)
+    {
+        case DEF_UART_CHANNEL_0:
+            if(parse_var.log_on == true)
+            {
+                if(result == true)
+                {
+                    char buffer[100] = {0, };
+                    sprintf(buffer, "VVA VOLT READ %d\r\n", value / 1000, value % 1000);
+                    UartWrite(DEF_UART_CHANNEL_0, (uint8_t*)buffer, strlen(buffer));
+                }
+                else
+                {
+                    UartWrite(DEF_UART_CHANNEL_0, (uint8_t*)"ERROR\r\n", strlen("ERROR\r\n"));
+                }
+            }
+            break;
+        default:
+            break;
+    }
+
+    va_end(args);
 }

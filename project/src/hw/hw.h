@@ -19,6 +19,7 @@ extern "C"{
 #include "sjk_gpio.h"
 #include "sjk_uart.h"
 #include "sjk_cli.h"
+#include "sjk_cli_data.h"
 #include "sjk_gpio.h"
 #include "sjk_led.h"
 #include "sjk_adc.h"

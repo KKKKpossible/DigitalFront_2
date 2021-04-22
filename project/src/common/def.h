@@ -18,6 +18,9 @@ extern "C"{
 #include "stdint.h"
 #include "string.h"
 #include "stdarg.h"
+#include "stdlib.h"
+#include "stdio.h"
+
 
 // uart channel
 #define DEF_UART_CHANNEL_0                 (0U)
