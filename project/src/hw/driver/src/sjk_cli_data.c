@@ -52,7 +52,7 @@ void CliCmdModeToggle(uint8_t ch, char* fmt, ...)
                 parse_var.cmd_mode_on = false;
                 if(parse_var.log_on == true)
                 {
-                    UartWrite(DEF_UART_CHANNEL_0, (uint8_t*)"CMD MODE OFF\r\n", 14);
+                    UartWriteTxBuffer(DEF_UART_CHANNEL_0, (uint8_t*)"CMD MODE OFF\r\n", 14);
                 }
             }
             else
@@ -60,7 +60,7 @@ void CliCmdModeToggle(uint8_t ch, char* fmt, ...)
                 parse_var.cmd_mode_on = true;
                 if(parse_var.log_on == true)
                 {
-                    UartWrite(DEF_UART_CHANNEL_0, (uint8_t*)"CMD MODE ON\r\n", 13);
+                    UartWriteTxBuffer(DEF_UART_CHANNEL_0, (uint8_t*)"CMD MODE ON\r\n", 13);
                 }
             }
             break;
@@ -78,7 +78,7 @@ void CliLogOn(uint8_t ch, char* fmt, ...)
         parse_var.log_on = true;
         if(parse_var.log_on == true)
         {
-            UartWrite(DEF_UART_CHANNEL_0, (uint8_t*)"LOG ON\r\n", 8);
+            UartWriteTxBuffer(DEF_UART_CHANNEL_0, (uint8_t*)"LOG ON\r\n", 8);
         }
     }
 }
@@ -90,7 +90,7 @@ void CliLogOff(uint8_t ch, char* fmt, ...)
         parse_var.log_on = false;
         if(parse_var.log_on == false)
         {
-            UartWrite(DEF_UART_CHANNEL_0, (uint8_t*)"LOG OFF\r\n", 9);
+            UartWriteTxBuffer(DEF_UART_CHANNEL_0, (uint8_t*)"LOG OFF\r\n", 9);
         }
     }
 }
@@ -111,11 +111,11 @@ void CliLogRead(uint8_t ch, char* fmt, ...)
 {
     if(parse_var.log_on == true)
     {
-        UartWrite(DEF_UART_CHANNEL_0, (uint8_t*)"ON\r\n", 4);
+        UartWriteTxBuffer(DEF_UART_CHANNEL_0, (uint8_t*)"ON\r\n", 4);
     }
     else
     {
-        UartWrite(DEF_UART_CHANNEL_0, (uint8_t*)"OFF\r\n", 5);
+        UartWriteTxBuffer(DEF_UART_CHANNEL_0, (uint8_t*)"OFF\r\n", 5);
     }
 }
 
@@ -150,11 +150,11 @@ void CliLedOn(uint8_t ch, char* fmt, ...)
     {
         if(result == true)
         {
-            UartWrite(DEF_UART_CHANNEL_0, (uint8_t*)"LED ON\r\n", 8);
+            UartWriteTxBuffer(DEF_UART_CHANNEL_0, (uint8_t*)"LED ON\r\n", 8);
         }
         else
         {
-            UartWrite(DEF_UART_CHANNEL_0, (uint8_t*)"ERROR\r\n", 8);
+            UartWriteTxBuffer(DEF_UART_CHANNEL_0, (uint8_t*)"ERROR\r\n", 8);
         }
     }
 }
@@ -167,11 +167,11 @@ void CliLedOff(uint8_t ch, char* fmt, ...)
     {
         if(result == true)
         {
-            UartWrite(DEF_UART_CHANNEL_0, (uint8_t*)"LED OFF\r\n", strlen("LED OFF\r\n"));
+            UartWriteTxBuffer(DEF_UART_CHANNEL_0, (uint8_t*)"LED OFF\r\n", strlen("LED OFF\r\n"));
         }
         else
         {
-            UartWrite(DEF_UART_CHANNEL_0, (uint8_t*)"ERROR\r\n", strlen("ERROR\r\n"));
+            UartWriteTxBuffer(DEF_UART_CHANNEL_0, (uint8_t*)"ERROR\r\n", strlen("ERROR\r\n"));
         }
     }
 }
@@ -193,11 +193,11 @@ void CliLedToggle(uint8_t ch, char* fmt, ...)
             {
                 if(result == true)
                 {
-                    UartWrite(DEF_UART_CHANNEL_0, (uint8_t*)"LED TOGGLE\r\n", strlen("LED TOGGLE\r\n"));
+                    UartWriteTxBuffer(DEF_UART_CHANNEL_0, (uint8_t*)"LED TOGGLE\r\n", strlen("LED TOGGLE\r\n"));
                 }
                 else
                 {
-                    UartWrite(DEF_UART_CHANNEL_0, (uint8_t*)"ERROR\r\n", strlen("ERROR\r\n"));
+                    UartWriteTxBuffer(DEF_UART_CHANNEL_0, (uint8_t*)"ERROR\r\n", strlen("ERROR\r\n"));
                 }
             }
             break;
@@ -218,13 +218,13 @@ void CliLedRead(uint8_t ch, char* fmt, ...)
         switch(state)
         {
             case RS_ERROR:
-                UartWrite(DEF_UART_CHANNEL_0, (uint8_t*)"ERROR\r\n", strlen("ERROR\r\n"));
+                UartWriteTxBuffer(DEF_UART_CHANNEL_0, (uint8_t*)"ERROR\r\n", strlen("ERROR\r\n"));
                 break;
             case RS_GPIO_PIN_RESET:
-                UartWrite(DEF_UART_CHANNEL_0, (uint8_t*)"RESET\r\n", strlen("RESET\r\n"));
+                UartWriteTxBuffer(DEF_UART_CHANNEL_0, (uint8_t*)"RESET\r\n", strlen("RESET\r\n"));
                 break;
             case RS_GPIO_PIN_SET:
-                UartWrite(DEF_UART_CHANNEL_0, (uint8_t*)"SET\r\n", strlen("SET\r\n"));
+                UartWriteTxBuffer(DEF_UART_CHANNEL_0, (uint8_t*)"SET\r\n", strlen("SET\r\n"));
                 break;
             default:
                 break;
@@ -273,10 +273,14 @@ void CliVvaDbSet(uint8_t ch, char* fmt, ...)
 
     uint16_t var = 0;
 
+    bool point_check = false;
+
     for(int i = 0; buf[i] != '\0'; i++)
     {
         if(buf[i] == '.')
         {
+            point_check = true;
+
             if(i < 255)
             {
                 buf[i] = '\0';
@@ -301,7 +305,12 @@ void CliVvaDbSet(uint8_t ch, char* fmt, ...)
         }
     }
 
-    bool result = VvaSendDb(DEF_VVA_CHANNEL_0, var);
+    bool result = false;
+
+    if(point_check == true)
+    {
+        result = VvaSendDb(DEF_VVA_CHANNEL_0, var);
+    }
 
     switch(ch)
     {
@@ -310,11 +319,11 @@ void CliVvaDbSet(uint8_t ch, char* fmt, ...)
             {
                 if(result == true)
                 {
-                    UartWrite(DEF_UART_CHANNEL_0, (uint8_t*)"VVA DB SET\r\n", strlen("VVA DB SET\r\n"));
+                    UartWriteTxBuffer(DEF_UART_CHANNEL_0, (uint8_t*)"VVA DB SET\r\n", strlen("VVA DB SET\r\n"));
                 }
                 else
                 {
-                    UartWrite(DEF_UART_CHANNEL_0, (uint8_t*)"ERROR\r\n", strlen("ERROR\r\n"));
+                    UartWriteTxBuffer(DEF_UART_CHANNEL_0, (uint8_t*)"ERROR\r\n", strlen("ERROR\r\n"));
                 }
             }
             break;
@@ -357,11 +366,11 @@ void CliVvaDbRead(uint8_t ch, char* fmt, ...)
                     {
                         sprintf(buffer, "VVA DB READ %d.%d\r\n", overpoint, underpoint);
                     }
-                    UartWrite(DEF_UART_CHANNEL_0, (uint8_t*)buffer, strlen(buffer));
+                    UartWriteTxBuffer(DEF_UART_CHANNEL_0, (uint8_t*)buffer, strlen(buffer));
                 }
                 else
                 {
-                    UartWrite(DEF_UART_CHANNEL_0, (uint8_t*)"ERROR\r\n", strlen("ERROR\r\n"));
+                    UartWriteTxBuffer(DEF_UART_CHANNEL_0, (uint8_t*)"ERROR\r\n", strlen("ERROR\r\n"));
                 }
             }
             break;
@@ -374,12 +383,63 @@ void CliVvaDbRead(uint8_t ch, char* fmt, ...)
 
 void CliVvaTableSet(uint8_t ch, char* fmt, ...)
 {
+    char buf[256] = {0, };
+    va_list args;
 
+    va_start(args, fmt);
+    vsnprintf(buf, 256, fmt, args);
+
+    switch(ch)
+    {
+        case DEF_VVA_CHANNEL_0:
+            break;
+        default:
+            break;
+    }
+
+    va_end(args);
 }
 
 void CliVvaTableRead(uint8_t ch, char* fmt, ...)
 {
+    char buf[256] = {0, };
+    va_list args;
 
+    va_start(args, fmt);
+    vsnprintf(buf, 256, fmt, args);
+
+    int index = atoi(buf);
+
+    switch(ch)
+    {
+        case DEF_VVA_CHANNEL_0:
+            if(index != -1)
+            {
+                if(parse_var.log_on == true)
+                {
+                    uint8_t tr_buffer[50] = {0, };
+                    sprintf((char*)tr_buffer, "VVA TABLE READ [%d] = %d[mV]\r\n", index, (int)voltage_per_db_arr[index]);
+                    UartWriteTxBuffer(DEF_UART_CHANNEL_0, (uint8_t*)tr_buffer, strlen((char*)tr_buffer));
+                }
+            }
+            else
+            {
+                if(parse_var.log_on == true)
+                {
+                    uint8_t tr_buffer[50] = {0, };
+                    for(int i = 0; i < VOLTAGE_DB_TABLE_MAX; i++)
+                    {
+                        sprintf((char*)tr_buffer, "VVA TABLE READ [%d] = %d[mV]\r\n", i, (int)voltage_per_db_arr[i]);
+                        UartWriteTxBuffer(DEF_UART_CHANNEL_0, (uint8_t*)tr_buffer, strlen((char*)tr_buffer));
+                    }
+                }
+            }
+            break;
+        default:
+            break;
+    }
+
+    va_end(args);
 }
 
 void CliVvaMiliVoltSet(uint8_t ch, char* fmt, ...)
@@ -399,11 +459,11 @@ void CliVvaMiliVoltSet(uint8_t ch, char* fmt, ...)
             {
                 if(result == true)
                 {
-                    UartWrite(DEF_UART_CHANNEL_0, (uint8_t*)"VVA MILLI VOLT SET\r\n", strlen("VVA MILLI VOLT SET\r\n"));
+                    UartWriteTxBuffer(DEF_UART_CHANNEL_0, (uint8_t*)"VVA MILLI VOLT SET\r\n", strlen("VVA MILLI VOLT SET\r\n"));
                 }
                 else
                 {
-                    UartWrite(DEF_UART_CHANNEL_0, (uint8_t*)"ERROR\r\n", strlen("ERROR\r\n"));
+                    UartWriteTxBuffer(DEF_UART_CHANNEL_0, (uint8_t*)"ERROR\r\n", strlen("ERROR\r\n"));
                 }
             }
             break;
@@ -440,12 +500,12 @@ void CliVvaVoltRead(uint8_t ch, char* fmt, ...)
                 if(result == true)
                 {
                     char buffer[100] = {0, };
-                    sprintf(buffer, "VVA VOLT READ %d\r\n", value / 1000, value % 1000);
-                    UartWrite(DEF_UART_CHANNEL_0, (uint8_t*)buffer, strlen(buffer));
+                    sprintf(buffer, "VVA VOLT READ %d.%d[V]\r\n", value / 1000, value % 1000);
+                    UartWriteTxBuffer(DEF_UART_CHANNEL_0, (uint8_t*)buffer, strlen(buffer));
                 }
                 else
                 {
-                    UartWrite(DEF_UART_CHANNEL_0, (uint8_t*)"ERROR\r\n", strlen("ERROR\r\n"));
+                    UartWriteTxBuffer(DEF_UART_CHANNEL_0, (uint8_t*)"ERROR\r\n", strlen("ERROR\r\n"));
                 }
             }
             break;

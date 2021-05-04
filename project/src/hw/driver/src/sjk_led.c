@@ -9,7 +9,7 @@
 #include "sjk_led.h"
 
 
-extern Gpio_out_t  gpio_output_arr[DEF_GPIO_OUTPUT_CHANNEL_MAX];
+extern Gpio_t  gpio_output_arr[DEF_GPIO_OUTPUT_CHANNEL_MAX];
 
 
 bool LedInit(uint8_t ch)

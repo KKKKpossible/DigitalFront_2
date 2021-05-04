@@ -4,9 +4,6 @@
 
 extern ApClass ap;
 
-extern UART_HandleTypeDef huart1;
-
-extern Cli_t cli_arr[];
 
 int main(void)
 {

@@ -28,6 +28,8 @@ extern "C"{
 #include "sjk_spi.h"
 #include "sjk_vva.h"
 #include "sjk_flash.h"
+#include "sjk_shutdown.h"
+#include "sjk_switch.h"
 
 
 bool HwInit(void);

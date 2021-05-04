@@ -22,19 +22,13 @@ extern "C"{
 #define DEF_GPIO_INPUT_CHANNEL_MAX  HW_GPIO_INPUT_CHANNEL_MAX
 
 
-typedef struct Gpio_out_t
+typedef struct Gpio_t
 {
     GPIO_TypeDef* port;
     uint16_t      pin;
     GPIO_PinState set;
     GPIO_PinState reset;
-}Gpio_out_t;
-
-typedef struct Gpio_input_t
-{
-    GPIO_TypeDef* port;
-    uint16_t      pin;
-}Gpio_input_t;
+}Gpio_t;
 
 typedef enum ReadState
 {

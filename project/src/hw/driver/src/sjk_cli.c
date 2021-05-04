@@ -41,6 +41,7 @@ Cli_t cli_arr[] =
 
 Parse_t parse_var;
 
+
 bool CliInit(void)
 {
     bool ret = true;
@@ -54,87 +55,101 @@ bool CliInit(void)
     return ret;
 }
 
-void Parse(uint8_t data)
+void Parse(uint8_t ch, uint8_t data)
 {
-    if(parse_var.index >= PARSE_BUFF_MAX)
+    switch(ch)
     {
-        parse_var.index = PARSE_BUFF_MAX - 1;
-    }
-
-    if(parse_var.cmd_mode_on == true)
-    {
-        switch(data)
-        {
-            case '\r':
-            case '\n':
-               if(parse_var.index != 0)
-               {
-                   parse_var.buffer[parse_var.index] = '\0';
-
-                   ParseProcedure();
-               }
-               parse_var.index = 0;
-               break;
-            default:
-               parse_var.buffer[parse_var.index] = data;
-               parse_var.index++;
-               break;
-        }
-    }
-    else
-    {
-        switch(data)
-        {
-            case '*':
-                parse_var.asterisk_det = true;
-                break;
-            case 0:
-                if(parse_var.asterisk_det == true)
+        case DEF_UART_CHANNEL_0:
+            if(parse_var.echo_on[ch] == true)
+            {
+                UartWriteTxBuffer(ch, &data, 1);
+            }
+            if(parse_var.cmd_mode_on == true)
+            {
+                switch(data)
                 {
-                    parse_var.index = 0;
-                    parse_var.asterisk_det = false;
+                    case '\r':
+                    case '\n':
+                       if(parse_var.index != 0)
+                       {
+                           parse_var.buffer[parse_var.index] = '\0';
+                           ParseProcedure();
+                       }
+                       parse_var.index = 0;
+                       break;
+                    default:
+                       parse_var.buffer[parse_var.index] = data;
+                       parse_var.index++;
+                       break;
                 }
-                else
+            }
+            else
+            {
+                switch(data)
                 {
-                    parse_var.buffer[parse_var.index] = data;
-                    parse_var.index++;
+                    case '*':
+                        parse_var.asterisk_det = true;
+                        break;
+                    case 0:
+                        if(parse_var.asterisk_det == true)
+                        {
+                            parse_var.index = 0;
+                            parse_var.asterisk_det = false;
+                        }
+                        else
+                        {
+                            parse_var.buffer[parse_var.index] = data;
+                            parse_var.index++;
+                        }
+                        break;
+                    case 1:
+                        if(parse_var.asterisk_det == true)
+                        {
+                            parse_var.buffer[parse_var.index] = '\0';
+                            ParseProcedure();
+                            parse_var.asterisk_det = false;
+                        }
+                        else
+                        {
+                            parse_var.buffer[parse_var.index] = data;
+                            parse_var.index++;
+                        }
+                        break;
+                    case 2:
+                        if(parse_var.asterisk_det == true)
+                        {
+                            parse_var.buffer[parse_var.index] = '*';
+                            parse_var.index++;
+                            parse_var.asterisk_det = false;
+                        }
+                        else
+                        {
+                            parse_var.buffer[parse_var.index] = data;
+                            parse_var.index++;
+                        }
+                        break;
+                    default:
+                        if(parse_var.asterisk_det == true)
+                        {
+                            parse_var.asterisk_det = false;
+                        }
+                        parse_var.buffer[parse_var.index] = data;
+                        parse_var.index++;
+                        break;
                 }
-                break;
-            case 1:
-                if(parse_var.asterisk_det == true)
-                {
-                    parse_var.buffer[parse_var.index] = '\0';
-                    ParseProcedure();
-                    parse_var.asterisk_det = false;
-                }
-                else
-                {
-                    parse_var.buffer[parse_var.index] = data;
-                    parse_var.index++;
-                }
-                break;
-            case 2:
-                if(parse_var.asterisk_det == true)
-                {
-                    parse_var.buffer[parse_var.index] = '*';
-                    parse_var.index++;
-                    parse_var.asterisk_det = false;
-                }
-                else
-                {
-                    parse_var.buffer[parse_var.index] = data;
-                    parse_var.index++;
-                }
-                break;
-            default:
-                if(parse_var.asterisk_det == true)
-                {
-                    parse_var.asterisk_det = false;
-                }
-                parse_var.buffer[parse_var.index] = data;
-                parse_var.index++;
-                break;
-        }
+            }
+            /*
+             * polling 구현
+             *
+            while(UartIsEmptyTxBuffer(ch) == false)
+            {
+                UartSendTxBufferPolling(ch, UartTxAvailable(ch));
+            }
+            */
+            UartSendTxBufferInterrupt(ch, UartTxAvailable(ch));
+            break;
+        default:
+            break;
     }
 }
 

@@ -11,22 +11,6 @@
 #include "sjk_flash.h"
 
 
-#define VOLTAGE_DB_TABLE_MAX (31U)
-#define DEFAULT_DB_SET_VAL   (0U)
-
-#define VVA_SAVE_CHECK_ADDR  (0x8000000 + (62 * 1024))
-
-#define SAVE_KEY_VALUE_0     (118U)
-#define SAVE_KEY_VALUE_1     (96U)
-
-
-typedef struct Vva_t
-{
-    uint16_t offset;
-    uint16_t ratio;
-}Vva_t;
-
-
 Vva_t     vva_var;
 AD5592R_t ad5592r_var;
 uint16_t  voltage_per_db_arr[VOLTAGE_DB_TABLE_MAX];
@@ -54,7 +38,7 @@ bool VvaInit(uint8_t ch)
                 }
                 VvaTableSave(ch);
             }
-            VvaSendDb(ch, DEFAULT_DB_SET_VAL);
+            VvaSendDb(ch, voltage_per_db_arr[0]);
             break;
         default:
             ret = false;
@@ -307,19 +291,26 @@ bool VvaTableLoad(uint8_t ch)
 
     uint8_t flash_load_buff[(31 * 2) + 2] = {0, };
 
-    FlashRead(VVA_SAVE_CHECK_ADDR, flash_load_buff, (VOLTAGE_DB_TABLE_MAX * 2) + 2);
-    if((flash_load_buff[0] == SAVE_KEY_VALUE_0) && (flash_load_buff[1] == SAVE_KEY_VALUE_1))
+    switch(ch)
     {
-        for(int i = 0; i < VOLTAGE_DB_TABLE_MAX; i++)
-        {
-            voltage_per_db_arr[i]  = 0;
-            voltage_per_db_arr[i] |= flash_load_buff[2 * i + 2];
-            voltage_per_db_arr[i] |= flash_load_buff[(2 * i) + 1 + 2] << 8;
-        }
-    }
-    else
-    {
-        ret = false;
+        case DEF_VVA_CHANNEL_0:
+            FlashRead(VVA_SAVE_CHECK_ADDR, flash_load_buff, (VOLTAGE_DB_TABLE_MAX * 2) + 2);
+            if((flash_load_buff[0] == SAVE_KEY_VALUE_0) && (flash_load_buff[1] == SAVE_KEY_VALUE_1))
+            {
+                for(int i = 0; i < VOLTAGE_DB_TABLE_MAX; i++)
+                {
+                    voltage_per_db_arr[i]  = 0;
+                    voltage_per_db_arr[i] |= flash_load_buff[2 * i + 2];
+                    voltage_per_db_arr[i] |= flash_load_buff[(2 * i) + 1 + 2] << 8;
+                }
+            }
+            else
+            {
+                ret = false;
+            }
+            break;
+        default:
+            break;
     }
 
     return ret;
@@ -333,7 +324,6 @@ bool VvaTableSave(uint8_t ch)
     switch(ch)
     {
         case DEF_VVA_CHANNEL_0:
-
             FlashErase(VVA_SAVE_CHECK_ADDR, (VOLTAGE_DB_TABLE_MAX * 2) + 2);
             FlashWrite(VVA_SAVE_CHECK_ADDR, key_arr, 2);
             FlashWrite(VVA_SAVE_CHECK_ADDR + 2, (uint8_t*)voltage_per_db_arr, VOLTAGE_DB_TABLE_MAX * 2);

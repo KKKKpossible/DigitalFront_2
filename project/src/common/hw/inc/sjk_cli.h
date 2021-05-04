@@ -19,6 +19,7 @@ extern "C"{
 
 #ifdef  HW_CLI_USE
 
+
 typedef enum ECHO_ENUM
 {
     SERIAL, ETHERNET, ECHO_ENUM_MAX
@@ -33,7 +34,7 @@ typedef struct Cli_t
 }Cli_t;
 
 
-#define PARSE_BUFF_MAX (1024U)
+#define PARSE_BUFF_MAX (50U)
 
 typedef struct Parse_t
 {
@@ -47,7 +48,7 @@ typedef struct Parse_t
 
 
 bool CliInit (void);
-void Parse   (uint8_t data);
+void Parse   (uint8_t ch, uint8_t data);
 
 
 #endif

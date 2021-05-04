@@ -23,7 +23,7 @@ extern "C"{
 
 
 // uart channel
-#define DEF_UART_CHANNEL_0                 (0U)
+#define DEF_UART_CHANNEL_0         (0U)
 
 
 // gpio output channel
@@ -60,7 +60,6 @@ extern "C"{
 #define DEF_MONITOR_CHANNEL_6      (6U)
 #define DEF_MONITOR_CHANNEL_7      (7U)
 #define DEF_MONITOR_CHANNEL_8      (8U)
-#define DEF_MONITOR_CHANNEL_9      (9U)
 
 #define DEF_MONITOR_CURR_0         (DEF_MONITOR_CHANNEL_0)
 #define DEF_MONITOR_TEMP_0         (DEF_MONITOR_CHANNEL_1)
@@ -71,13 +70,21 @@ extern "C"{
 #define DEF_MONITOR_EXT_SWITCH_1   (DEF_MONITOR_CHANNEL_6)
 #define DEF_MONITOR_HPA_SHUTDOWN_0 (DEF_MONITOR_CHANNEL_7)
 #define DEF_MONITOR_EXT_SHUTDOWN_0 (DEF_MONITOR_CHANNEL_8)
-#define DEF_MONITOR_FAULT          (DEF_MONITOR_CHANNEL_9)
 
+// spi channel
 #define DEF_SPI_CHANNEL_0          (0U)
 #define DEF_SPI_SS_CHANNEL_0       (DEF_GPIO_OUTPUT_CHANNEL_2)
 
+// vva channel
 #define DEF_VVA_CHANNEL_0          (0U)
 
+// shutdown channel
+#define DEF_EXT_SHUTDOWN_CHANNEL_0 (0U)
+#define DEF_SHUTDOWN_CHANNEL_0     (0U)
+
+// switch channel
+#define DEF_SWITCH_CHANNEL_0       (0U)
+#define DEF_SWITCH_CHANNEL_1       (1U)
 
 #ifdef __cplusplus
 }

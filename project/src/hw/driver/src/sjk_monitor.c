@@ -7,34 +7,27 @@
 
 
 #include "sjk_monitor.h"
-#include "sjk_vva.h"
+#include "hw.h"
 
 
 typedef struct Monitor_t
 {
-    uint32_t     data;
-    uint32_t     offset;
-    uint32_t     ratio;
-    uint32_t     record_count;
+    uint32_t data;
+    uint32_t offset;
+    uint32_t ratio;
+    int      count;
+    uint32_t count_max;
 }Monitor_t;
 
 
-static Monitor_t monitor_arr[DEF_MONITOR_CHANNEL_MAX] =
-        {
-
-        };
-
-
-static bool     MonitorReadBool   (uint8_t ch);
-static bool     MonitorWriteBool  (uint8_t ch, uint32_t data);
-static uint32_t MonitorReadUint32 (uint8_t ch);
+static Monitor_t monitor_arr[DEF_MONITOR_CHANNEL_MAX];
 
 
 bool MonitorInit()
 {
     bool ret = true;
 
-    for(int ch; ch < DEF_MONITOR_CHANNEL_MAX; ch++)
+    for(int ch = DEF_MONITOR_CHANNEL_0; ch < DEF_MONITOR_CHANNEL_MAX; ch++)
     {
         switch(ch)
         {
@@ -42,61 +35,65 @@ bool MonitorInit()
                 monitor_arr[ch].data         = 0;
                 monitor_arr[ch].offset       = 1;
                 monitor_arr[ch].ratio        = 1;
-                monitor_arr[ch].record_count = 10;
+                monitor_arr[ch].count        = 0;
+                monitor_arr[ch].count_max    = 100;
                 break;
             case DEF_MONITOR_TEMP_0:
                 monitor_arr[ch].data         = 0;
                 monitor_arr[ch].offset       = 1;
                 monitor_arr[ch].ratio        = 1;
-                monitor_arr[ch].record_count = 10;
+                monitor_arr[ch].count        = 0;
+                monitor_arr[ch].count_max    = 100;
                 break;
             case DEF_MONITOR_HTEMP_0:
                 monitor_arr[ch].data         = 0;
                 monitor_arr[ch].offset       = 1;
                 monitor_arr[ch].ratio        = 1;
-                monitor_arr[ch].record_count = 10;
+                monitor_arr[ch].count        = 0;
+                monitor_arr[ch].count_max    = 100;
                 break;
             case DEF_MONITOR_EXT_ATTEN_0:
                 monitor_arr[ch].data         = 0;
                 monitor_arr[ch].offset       = 1;
                 monitor_arr[ch].ratio        = 1;
-                monitor_arr[ch].record_count = 10;
+                monitor_arr[ch].count        = 0;
+                monitor_arr[ch].count_max    = 100;
                 break;
             case DEF_MONITOR_INT_ATTEN_0:
                 monitor_arr[ch].data         = 0;
                 monitor_arr[ch].offset       = 1;
                 monitor_arr[ch].ratio        = 1;
-                monitor_arr[ch].record_count = 10;
+                monitor_arr[ch].count        = 0;
+                monitor_arr[ch].count_max    = 100;
                 break;
             case DEF_MONITOR_EXT_SWITCH_0:
                 monitor_arr[ch].data         = 0;
                 monitor_arr[ch].offset       = 1;
                 monitor_arr[ch].ratio        = 1;
-                monitor_arr[ch].record_count = 10;
+                monitor_arr[ch].count        = 0;
+                monitor_arr[ch].count_max    = 100;
+
                 break;
             case DEF_MONITOR_EXT_SWITCH_1:
                 monitor_arr[ch].data         = 0;
                 monitor_arr[ch].offset       = 1;
                 monitor_arr[ch].ratio        = 1;
-                monitor_arr[ch].record_count = 10;
+                monitor_arr[ch].count        = 0;
+                monitor_arr[ch].count_max    = 100;
                 break;
             case DEF_MONITOR_HPA_SHUTDOWN_0:
                 monitor_arr[ch].data         = 0;
                 monitor_arr[ch].offset       = 1;
                 monitor_arr[ch].ratio        = 1;
-                monitor_arr[ch].record_count = 10;
+                monitor_arr[ch].count        = 0;
+                monitor_arr[ch].count_max    = 100;
                 break;
             case DEF_MONITOR_EXT_SHUTDOWN_0:
                 monitor_arr[ch].data         = 0;
                 monitor_arr[ch].offset       = 1;
                 monitor_arr[ch].ratio        = 1;
-                monitor_arr[ch].record_count = 10;
-                break;
-            case DEF_MONITOR_FAULT:
-                monitor_arr[ch].data         = 0;
-                monitor_arr[ch].offset       = 1;
-                monitor_arr[ch].ratio        = 1;
-                monitor_arr[ch].record_count = 10;
+                monitor_arr[ch].count        = 0;
+                monitor_arr[ch].count_max    = 100;
                 break;
         }
     }
@@ -104,123 +101,37 @@ bool MonitorInit()
     return ret;
 }
 
-bool MonitorRead(uint8_t ch, uint32_t* retbuff)
+uint32_t MonitorReadData(uint8_t ch)
 {
-    bool ret = true;
-
-    switch(ch)
-    {
-        case DEF_MONITOR_CURR_0:
-            *retbuff = MonitorReadUint32(ch);
-            break;
-        case DEF_MONITOR_TEMP_0:
-            *retbuff = MonitorReadUint32(ch);
-            break;
-        case DEF_MONITOR_HTEMP_0:
-            *retbuff = MonitorReadUint32(ch);
-            break;
-        case DEF_MONITOR_EXT_ATTEN_0:
-            *retbuff = MonitorReadUint32(ch);
-            break;
-        case DEF_MONITOR_INT_ATTEN_0:
-            break;
-        case DEF_MONITOR_EXT_SWITCH_0:
-            *retbuff = MonitorReadBool(ch);
-            break;
-        case DEF_MONITOR_EXT_SWITCH_1:
-            *retbuff = MonitorReadBool(ch);
-            break;
-        case DEF_MONITOR_HPA_SHUTDOWN_0:
-            *retbuff = MonitorReadBool(ch);
-            break;
-        case DEF_MONITOR_EXT_SHUTDOWN_0:
-            *retbuff = MonitorReadBool(ch);
-            break;
-        case DEF_MONITOR_FAULT:
-            *retbuff = MonitorReadBool(ch);
-            break;
-        default:
-            ret = false;
-            break;
-    }
-
-    return ret;
+    return monitor_arr[ch].data * monitor_arr[ch].offset * monitor_arr[ch].ratio;
 }
 
-bool MonitorWrite(uint8_t ch, uint32_t data)
+int MonitorReadCount (uint8_t ch)
 {
-    bool ret = true;
-
-    switch(ch)
-    {
-        case DEF_MONITOR_CURR_0:
-            ret = false;
-            break;
-        case DEF_MONITOR_TEMP_0:
-            ret = false;
-            break;
-        case DEF_MONITOR_HTEMP_0:
-            ret = false;
-            break;
-        case DEF_MONITOR_EXT_ATTEN_0:
-            ret = false;
-            break;
-        case DEF_MONITOR_INT_ATTEN_0:
-            break;
-        case DEF_MONITOR_EXT_SWITCH_0:
-            ret = false;
-            break;
-        case DEF_MONITOR_EXT_SWITCH_1:
-            ret = false;
-            break;
-        case DEF_MONITOR_HPA_SHUTDOWN_0:
-            ret = MonitorWriteBool(ch, data);
-            break;
-        case DEF_MONITOR_EXT_SHUTDOWN_0:
-            ret = false;
-            break;
-        case DEF_MONITOR_FAULT:
-            ret = MonitorWriteBool(ch, data);
-            break;
-    }
-    return ret;
+    return monitor_arr[ch].count;
 }
 
-static bool MonitorReadBool(uint8_t ch)
+uint32_t MonitorReadCountMax (uint8_t ch)
 {
-    bool ret = true;
-
-    switch(ch)
-    {
-
-    }
-
-    return ret;
+    return monitor_arr[ch].count_max;
 }
 
-static bool MonitorWriteBool(uint8_t ch, uint32_t data)
+void MonitorDataSet(uint8_t ch, uint32_t data)
 {
-    bool ret = true;
-
-    switch(ch)
-    {
-        default:
-            ret = false;
-            break;
-    }
-
-    return ret;
+    monitor_arr[ch].data = data;
 }
 
-static uint32_t MonitorReadUint32(uint8_t ch)
+void MonitorOffsetSet(uint8_t ch, uint32_t offset)
 {
-    uint32_t ret = true;
-
-    switch(ch)
-    {
-
-    }
-
-    return ret;
+    monitor_arr[ch].offset = offset;
 }
 
+void MonitorRatioSet(uint8_t ch, uint32_t ratio)
+{
+    monitor_arr[ch].ratio = ratio;
+}
+
+void MonitorCountAdd(uint8_t ch, int data)
+{
+    monitor_arr[ch].count += data;
+}

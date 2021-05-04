@@ -21,9 +21,14 @@ extern "C"{
 #define DEF_MONITOR_CHANNEL_MAX HW_MONITOR_CHANNEL_MAX
 
 
-bool MonitorInit  (void);
-bool MonitorRead  (uint8_t ch, uint32_t* retbuff); // not clear
-bool MonitorWrite (uint8_t ch, uint32_t  data);    // not clear
+bool     MonitorInit         (void);
+uint32_t MonitorReadData     (uint8_t ch);
+int      MonitorReadCount    (uint8_t ch);
+uint32_t MonitorReadCountMax (uint8_t ch);
+void     MonitorDataSet      (uint8_t ch, uint32_t data  );
+void     MonitorOffsetSet    (uint8_t ch, uint32_t offset);
+void     MonitorRatioSet     (uint8_t ch, uint32_t ratio );
+void     MonitorCountAdd     (uint8_t ch, int data);
 
 
 #endif

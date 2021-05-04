@@ -9,8 +9,8 @@
 #include "sjk_gpio.h"
 
 
-Gpio_out_t   gpio_output_arr[DEF_GPIO_OUTPUT_CHANNEL_MAX];
-Gpio_input_t gpio_input_arr [DEF_GPIO_INPUT_CHANNEL_MAX];
+Gpio_t gpio_output_arr[DEF_GPIO_OUTPUT_CHANNEL_MAX];
+Gpio_t gpio_input_arr [DEF_GPIO_INPUT_CHANNEL_MAX];
 
 
 static bool GpioArrInit (void);
@@ -93,9 +93,13 @@ ReadState GpioOutputRead(uint8_t ch)
       case DEF_GPIO_OUTPUT_CHANNEL_2:
       case DEF_GPIO_OUTPUT_CHANNEL_3:
           state = HAL_GPIO_ReadPin(gpio_output_arr[ch].port, gpio_output_arr[ch].pin);
-          if(state == GPIO_PIN_RESET)
+          if(gpio_output_arr[ch].set == state)
           {
               ret = RS_GPIO_PIN_SET;
+          }
+          else
+          {
+              ret = RS_GPIO_PIN_RESET;
           }
           break;
       default:
@@ -116,9 +120,13 @@ ReadState GpioInputRead(uint8_t ch)
         case DEF_GPIO_INPUT_CHANNEL_1:
         case DEF_GPIO_INPUT_CHANNEL_2:
             state = HAL_GPIO_ReadPin(gpio_input_arr[ch].port, gpio_input_arr[ch].pin);
-            if(state == GPIO_PIN_SET)
+            if(state == gpio_input_arr[ch].set)
             {
                 ret = RS_GPIO_PIN_SET;
+            }
+            else
+            {
+                ret = RS_GPIO_PIN_RESET;
             }
             break;
         default:
@@ -172,16 +180,22 @@ static bool GpioArrInit(void)
         switch(i)
         {
             case DEF_GPIO_INPUT_CHANNEL_0:
-                gpio_input_arr[i].port = GPIOB;
-                gpio_input_arr[i].pin  = GPIO_PIN_3;
+                gpio_input_arr[i].port  = GPIOB;
+                gpio_input_arr[i].pin   = GPIO_PIN_3;
+                gpio_input_arr[i].set   = GPIO_PIN_SET;
+                gpio_input_arr[i].reset = GPIO_PIN_RESET;
                 break;
             case DEF_GPIO_INPUT_CHANNEL_1:
-                gpio_input_arr[i].port = GPIOB;
-                gpio_input_arr[i].pin  = GPIO_PIN_4;
+                gpio_input_arr[i].port  = GPIOB;
+                gpio_input_arr[i].pin   = GPIO_PIN_4;
+                gpio_input_arr[i].set   = GPIO_PIN_SET;
+                gpio_input_arr[i].reset = GPIO_PIN_RESET;
                 break;
             case DEF_GPIO_INPUT_CHANNEL_2:
-                gpio_input_arr[i].port = GPIOB;
-                gpio_input_arr[i].pin  = GPIO_PIN_8;
+                gpio_input_arr[i].port  = GPIOB;
+                gpio_input_arr[i].pin   = GPIO_PIN_8;
+                gpio_input_arr[i].set   = GPIO_PIN_SET;
+                gpio_input_arr[i].reset = GPIO_PIN_RESET;
                 break;
             default:
                 ret = false;

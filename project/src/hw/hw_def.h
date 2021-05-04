@@ -14,34 +14,44 @@
 
 
 #define HW_UART_USE
-#define     HW_UART_CHANNEL_MAX        (1U)
+#define     HW_UART_CHANNEL_MAX         (1U)
 
 #define HW_GPIO_USE
-#define     HW_GPIO_OUTPUT_CHANNEL_MAX (4U)
-#define     HW_GPIO_INPUT_CHANNEL_MAX  (3U)
+#define     HW_GPIO_OUTPUT_CHANNEL_MAX  (4U)
+#define     HW_GPIO_INPUT_CHANNEL_MAX   (3U)
 
 #define HW_CLI_USE
-#define     HW_CLI_CHANNEL_MAX         (5U)
+#define     HW_CLI_CHANNEL_MAX          (5U)
 
 #define HW_LED_USE
-#define     HW_LED_CHANNEL_MAX         (1U)
+#define     HW_LED_CHANNEL_MAX          (1U)
 
 #define HW_ADC_USE
-#define HW_ADC_CHANNEL_MAX             (8U)
+#define HW_ADC_CHANNEL_MAX              (8U)
 
 #define HW_DMA_USE
 
 #define HW_MONITOR_USE
-#define     HW_MONITOR_CHANNEL_MAX     (10U)
+#define     HW_MONITOR_CHANNEL_MAX      (9U)
 
 #define HW_SPI_USE
-#define     HW_SPI_CHANNEL_MAX         (1U)
+#define     HW_SPI_CHANNEL_MAX          (1U)
 
 #define HW_VVA_USE
-#define     HW_VVA_CHANNEL_MAX         (1U)
+#define     HW_VVA_CHANNEL_MAX          (1U)
 
 #define HW_FLASH_USE
-#define     HW_FLASH_CHANNEL_MAX       (1U)
+#define     HW_FLASH_CHANNEL_MAX        (1U)
+
+#define HW_EXT_SHUTDOWN_USE
+#define     HW_EXT_SHUTDOWN_CHANNEL_MAX (1U)
+
+#define HW_SHUTDOWN_USE
+#define     HW_SHUTDOWN_CHANNEL_MAX     (1U)
+
+
+#define HW_SWITCH_USE
+#define     HW_SWITCH_CHANNEL_MAX       (2U)
 
 
 #endif /* SRC_HW_HW_DEF_H_ */

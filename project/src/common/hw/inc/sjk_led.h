@@ -17,6 +17,7 @@ extern "C"{
 #include "hw_def.h"
 #include "sjk_gpio.h"
 
+
 #ifdef  HW_LED_USE
 #define DEF_LED_CHANNEL_MAX HW_LED_CHANNEL_MAX
 
