@@ -58,7 +58,7 @@ bool SpiWrite(uint8_t ch, uint8_t* data, uint16_t size)
     {
         case DEF_SPI_CHANNEL_0:
             GpioOff(DEF_SPI_SS_CHANNEL_0);
-            HAL_SPI_Transmit_IT(&hspi1, data, size);
+            HAL_SPI_Transmit(&hspi1, data, size, 10);
             GpioOn(DEF_SPI_SS_CHANNEL_0);
             break;
         default:

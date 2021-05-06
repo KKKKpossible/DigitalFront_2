@@ -21,16 +21,13 @@ extern "C"{
 #define DEF_ADC_CHANNEL_MAX HW_ADC_CHANNEL_MAX
 
 
-bool AdcInit  (void);
-bool AdcStart (void);
-bool AdcStop  (void);
+bool     AdcInit        (void);
+uint16_t AdcBufferRead  (uint8_t ch);
+uint32_t AdcSumBuffRead (uint8_t ch);
+void     AdcSumBuffAdd  (uint8_t ch, uint32_t adc_data);
 
 
 #endif
-
-
-//uint32_t AdcRead(ADC_HandleTypeDef* hadc);
-
 
 
 #ifdef __cplusplus

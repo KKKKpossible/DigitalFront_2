@@ -12,11 +12,13 @@
 
 typedef struct Monitor_t
 {
-    uint32_t data;
-    uint32_t offset;
-    uint32_t ratio;
-    int      count;
-    uint32_t count_max;
+    int64_t data;
+    int64_t offset;
+    int64_t ratio_per;
+    int64_t ratio_val;
+    int     count;
+    int64_t count_max;
+    int64_t limit;
 }Monitor_t;
 
 
@@ -33,67 +35,93 @@ bool MonitorInit()
         {
             case DEF_MONITOR_CURR_0:
                 monitor_arr[ch].data         = 0;
-                monitor_arr[ch].offset       = 1;
-                monitor_arr[ch].ratio        = 1;
+                monitor_arr[ch].offset       = 0;
+                monitor_arr[ch].ratio_per    = 4095;
+                monitor_arr[ch].ratio_val    = 3300;
                 monitor_arr[ch].count        = 0;
                 monitor_arr[ch].count_max    = 100;
+                monitor_arr[ch].limit        = 3300;
                 break;
             case DEF_MONITOR_TEMP_0:
                 monitor_arr[ch].data         = 0;
-                monitor_arr[ch].offset       = 1;
-                monitor_arr[ch].ratio        = 1;
+                monitor_arr[ch].offset       = 0;
+                monitor_arr[ch].ratio_per    = 4095;
+                monitor_arr[ch].ratio_val    = 3300;
                 monitor_arr[ch].count        = 0;
                 monitor_arr[ch].count_max    = 100;
+                monitor_arr[ch].limit        = 3300;
                 break;
             case DEF_MONITOR_HTEMP_0:
                 monitor_arr[ch].data         = 0;
-                monitor_arr[ch].offset       = 1;
-                monitor_arr[ch].ratio        = 1;
+                monitor_arr[ch].offset       = 1430 / 4.3 + 2500;
+                monitor_arr[ch].ratio_per    = -43 * 4095;
+                monitor_arr[ch].ratio_val    = 10 * 3300;
                 monitor_arr[ch].count        = 0;
                 monitor_arr[ch].count_max    = 100;
+                monitor_arr[ch].limit        = 3300;
                 break;
             case DEF_MONITOR_EXT_ATTEN_0:
                 monitor_arr[ch].data         = 0;
-                monitor_arr[ch].offset       = 1;
-                monitor_arr[ch].ratio        = 1;
+                monitor_arr[ch].offset       = 0;
+                monitor_arr[ch].ratio_per    = 4095;
+                monitor_arr[ch].ratio_val    = 3300;
                 monitor_arr[ch].count        = 0;
                 monitor_arr[ch].count_max    = 100;
+                monitor_arr[ch].limit        = 3300;
                 break;
             case DEF_MONITOR_INT_ATTEN_0:
                 monitor_arr[ch].data         = 0;
-                monitor_arr[ch].offset       = 1;
-                monitor_arr[ch].ratio        = 1;
+                monitor_arr[ch].offset       = 0;
+                monitor_arr[ch].ratio_per    = 4095;
+                monitor_arr[ch].ratio_val    = 3300;
                 monitor_arr[ch].count        = 0;
                 monitor_arr[ch].count_max    = 100;
+                monitor_arr[ch].limit        = 3300;
                 break;
             case DEF_MONITOR_EXT_SWITCH_0:
                 monitor_arr[ch].data         = 0;
-                monitor_arr[ch].offset       = 1;
-                monitor_arr[ch].ratio        = 1;
+                monitor_arr[ch].offset       = 0;
+                monitor_arr[ch].ratio_per    = 1;
+                monitor_arr[ch].ratio_val    = 1;
                 monitor_arr[ch].count        = 0;
                 monitor_arr[ch].count_max    = 100;
-
+                monitor_arr[ch].limit        = 3300;
                 break;
             case DEF_MONITOR_EXT_SWITCH_1:
                 monitor_arr[ch].data         = 0;
-                monitor_arr[ch].offset       = 1;
-                monitor_arr[ch].ratio        = 1;
+                monitor_arr[ch].offset       = 0;
+                monitor_arr[ch].ratio_per    = 1;
+                monitor_arr[ch].ratio_val    = 1;
                 monitor_arr[ch].count        = 0;
                 monitor_arr[ch].count_max    = 100;
+                monitor_arr[ch].limit        = 3300;
                 break;
             case DEF_MONITOR_HPA_SHUTDOWN_0:
                 monitor_arr[ch].data         = 0;
-                monitor_arr[ch].offset       = 1;
-                monitor_arr[ch].ratio        = 1;
+                monitor_arr[ch].offset       = 0;
+                monitor_arr[ch].ratio_per    = 1;
+                monitor_arr[ch].ratio_val    = 1;
                 monitor_arr[ch].count        = 0;
                 monitor_arr[ch].count_max    = 100;
+                monitor_arr[ch].limit        = 3300;
                 break;
             case DEF_MONITOR_EXT_SHUTDOWN_0:
                 monitor_arr[ch].data         = 0;
-                monitor_arr[ch].offset       = 1;
-                monitor_arr[ch].ratio        = 1;
+                monitor_arr[ch].offset       = 0;
+                monitor_arr[ch].ratio_per    = 1;
+                monitor_arr[ch].ratio_val    = 1;
                 monitor_arr[ch].count        = 0;
                 monitor_arr[ch].count_max    = 100;
+                monitor_arr[ch].limit        = 3300;
+                break;
+            case DEF_MONITOR_FAULT_0:
+                monitor_arr[ch].data         = 0;
+                monitor_arr[ch].offset       = 0;
+                monitor_arr[ch].ratio_per    = 1;
+                monitor_arr[ch].ratio_val    = 1;
+                monitor_arr[ch].count        = 0;
+                monitor_arr[ch].count_max    = 0;
+                monitor_arr[ch].limit        = 3300;
                 break;
         }
     }
@@ -101,37 +129,71 @@ bool MonitorInit()
     return ret;
 }
 
-uint32_t MonitorReadData(uint8_t ch)
+int64_t MonitorRead(uint8_t ch)
 {
-    return monitor_arr[ch].data * monitor_arr[ch].offset * monitor_arr[ch].ratio;
+    int64_t ret =
+            monitor_arr[ch].offset
+            + (monitor_arr[ch].data * monitor_arr[ch].ratio_val
+            / monitor_arr[ch].ratio_per);
+    return ret;
 }
 
-int MonitorReadCount (uint8_t ch)
+int64_t MonitorReadData(uint8_t ch)
+{
+    return monitor_arr[ch].data;
+}
+
+int MonitorReadCount(uint8_t ch)
 {
     return monitor_arr[ch].count;
 }
 
-uint32_t MonitorReadCountMax (uint8_t ch)
+int64_t MonitorReadCountMax(uint8_t ch)
 {
     return monitor_arr[ch].count_max;
 }
 
-void MonitorDataSet(uint8_t ch, uint32_t data)
+int64_t MonitorReadLimit(uint8_t ch)
+{
+    return monitor_arr[ch].limit;
+}
+
+void MonitorDataSet(uint8_t ch, int64_t data)
 {
     monitor_arr[ch].data = data;
 }
 
-void MonitorOffsetSet(uint8_t ch, uint32_t offset)
+void MonitorDataAddOr(uint8_t ch, int64_t data)
+{
+    monitor_arr[ch].data |= data;
+}
+
+void MonitorDataDelAnd(uint8_t ch, int64_t data)
+{
+    monitor_arr[ch].data &= ~(data);
+}
+
+void MonitorOffsetSet(uint8_t ch, int64_t offset)
 {
     monitor_arr[ch].offset = offset;
 }
 
-void MonitorRatioSet(uint8_t ch, uint32_t ratio)
+void MonitorRatioPerSet(uint8_t ch, int64_t ratio_per)
 {
-    monitor_arr[ch].ratio = ratio;
+    monitor_arr[ch].ratio_per = ratio_per;
 }
 
-void MonitorCountAdd(uint8_t ch, int data)
+void MonitorRatioValSet(uint8_t ch, int64_t ratio_val)
+{
+    monitor_arr[ch].ratio_val = ratio_val;
+}
+
+void MonitorCountAdd(uint8_t ch, int64_t data)
 {
     monitor_arr[ch].count += data;
+}
+
+void MonitorLimitSet(uint8_t ch, int64_t limit)
+{
+    monitor_arr[ch].limit = limit;
 }

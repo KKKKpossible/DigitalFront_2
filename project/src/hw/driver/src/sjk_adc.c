@@ -13,13 +13,13 @@ ADC_HandleTypeDef hadc1;
 DMA_HandleTypeDef hdma_adc1;
 
 
-static uint16_t adc_data[8] = {0, };
+static uint16_t adc_data    [DEF_ADC_CHANNEL_MAX] = {0, };
+static uint32_t adc_sum_buff[DEF_ADC_CHANNEL_MAX] = {0, };
 
 
 bool AdcInit(void)
 {
     bool ret = true;
-
     /* USER CODE BEGIN ADC1_Init 0 */
 
     /* USER CODE END ADC1_Init 0 */
@@ -116,11 +116,6 @@ bool AdcInit(void)
     return ret;
 }
 
-void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef* hadc)
-{
-
-}
-
 void HAL_ADC_MspInit(ADC_HandleTypeDef* adcHandle)
 {
 
@@ -207,4 +202,19 @@ void HAL_ADC_MspDeInit(ADC_HandleTypeDef* adcHandle)
 
   /* USER CODE END ADC1_MspDeInit 1 */
   }
+}
+
+uint16_t AdcBufferRead(uint8_t ch)
+{
+    return adc_data[ch];
+}
+
+uint32_t AdcSumBuffRead(uint8_t ch)
+{
+    return adc_sum_buff[ch];
+}
+
+void AdcSumBuffAdd(uint8_t ch, uint32_t adc_data)
+{
+    adc_sum_buff[ch] += adc_data;
 }

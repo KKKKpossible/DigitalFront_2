@@ -14,15 +14,13 @@ Gpio_t gpio_input_arr [DEF_GPIO_INPUT_CHANNEL_MAX];
 
 
 static bool GpioArrInit (void);
-static bool _GpioInit   (void);
 
 
 bool GpioInit(void)
 {
 	bool ret = true;
 
-	GpioArrInit ();
-	_GpioInit   ();
+	GpioArrInit();
 
 	return ret;
 }
@@ -30,6 +28,7 @@ bool GpioInit(void)
 bool GpioOn(uint8_t ch)
 {
     bool ret = true;
+
     switch(ch)
     {
         case DEF_GPIO_OUTPUT_CHANNEL_0:
@@ -42,6 +41,7 @@ bool GpioOn(uint8_t ch)
             ret = false;
             break;
     }
+
     return ret;
 }
 
@@ -204,13 +204,6 @@ static bool GpioArrInit(void)
         }
     }
 
-    return ret;
-}
-
-static bool _GpioInit(void)
-{
-    bool ret = true;
-
     GPIO_InitTypeDef GPIO_InitStruct = {0};
 
     /* GPIO Ports Clock Enable */
@@ -247,3 +240,4 @@ static bool _GpioInit(void)
 
     return ret;
 }
+

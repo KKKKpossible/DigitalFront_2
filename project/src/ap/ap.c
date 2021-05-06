@@ -14,21 +14,21 @@
 
 extern Parse_t parse_var;
 
-
 uint64_t global_fault;
 
+static bool ext_atten_load = false;
 
-static void ParsingAp        (void);
-static void MonitorReadAp    (void);
-static void MonitorOperateAp (void);
-static void BlinkAp          (void);
+
+static void ApParsing                     (void);
+static void ApMonitor                     (void);
+static void ApReadHwWriteOnMonitor        (void);
+static void ApReadFaultWriteHwWithMonitor (void);
+static void ApBlink                       (void);
 
 
 bool ApInit(void)
 {
 	bool ret = true;
-
-    delay(30);
 
 	return ret;
 }
@@ -38,22 +38,21 @@ bool ApMain(void)
 	bool   ret           = true;
     static uint32_t tick = 0;
 
-    ParsingAp();
+    ApParsing();
 
 	if(millis() - tick > 1)
     {
 	    tick = millis();
 
-	    MonitorReadAp();
-	    MonitorOperateAp();
+	    ApMonitor();
 
-	    BlinkAp();
+	    ApBlink();
     }
 
 	return ret;
 }
 
-static void BlinkAp(void)
+static void ApBlink(void)
 {
     static uint16_t blink = 0;
 
@@ -73,7 +72,7 @@ static void BlinkAp(void)
     blink++;
 }
 
-static void ParsingAp(void)
+static void ApParsing(void)
 {
     int uart_rxlength = UartRxAvailable(DEF_UART_CHANNEL_0);
 
@@ -84,35 +83,136 @@ static void ParsingAp(void)
     }
 }
 
-static void MonitorReadAp(void)
+static void ApMonitor(void)
+{
+    ApReadHwWriteOnMonitor();
+    ApReadFaultWriteHwWithMonitor();
+}
+
+
+static void ApReadHwWriteOnMonitor(void)
 {
     uint32_t hw_channel;
 
-    for(int ch = DEF_MONITOR_CHANNEL_0; ch < DEF_MONITOR_CHANNEL_MAX; ch++)
+    for(int monitor_ch = DEF_MONITOR_CHANNEL_0; monitor_ch < DEF_MONITOR_CHANNEL_MAX; monitor_ch++)
     {
-        switch(ch)
+        switch(monitor_ch)
         {
             case DEF_MONITOR_CURR_0:         // (DEF_MONITOR_CHANNEL_0)
+                hw_channel = DEF_ADC_CURRENT_0;
+                if(MonitorReadCount(monitor_ch) < MonitorReadCountMax(monitor_ch))
+                {
+                    MonitorCountAdd(monitor_ch, 1);
+                    AdcSumBuffAdd(hw_channel, AdcBufferRead(hw_channel));
+                }
+                else
+                {
+                    uint32_t adc_sum = AdcSumBuffRead(hw_channel) / MonitorReadCountMax(monitor_ch);
+                    MonitorDataSet(monitor_ch, adc_sum);
+                    MonitorCountAdd(monitor_ch, -(MonitorReadCountMax(monitor_ch)));
+                    AdcSumBuffAdd(hw_channel, -(AdcSumBuffRead(hw_channel)));
+
+                    if(MonitorRead(monitor_ch) > MonitorReadLimit(monitor_ch))
+                    {
+                        MonitorDataAddOr(DEF_MONITOR_FAULT_0, (1 << DEF_FAULT_CURRENT_0));
+                    }
+                    else
+                    {
+                        MonitorDataDelAnd(DEF_MONITOR_FAULT_0, (1 << DEF_FAULT_CURRENT_0));
+                    }
+                }
                 break;
             case DEF_MONITOR_TEMP_0:         // (DEF_MONITOR_CHANNEL_1)
+
+                hw_channel = DEF_ADC_TEMP_0;
+                if(MonitorReadCount(monitor_ch) < MonitorReadCountMax(monitor_ch))
+                {
+                    MonitorCountAdd(monitor_ch, 1);
+                    AdcSumBuffAdd(hw_channel, AdcBufferRead(hw_channel));
+                }
+                else
+                {
+                    uint32_t adc_sum = AdcSumBuffRead(hw_channel) / MonitorReadCountMax(monitor_ch);
+                    MonitorDataSet(monitor_ch, adc_sum);
+                    MonitorCountAdd(monitor_ch, -(MonitorReadCountMax(monitor_ch)));
+                    AdcSumBuffAdd(hw_channel, -(AdcSumBuffRead(hw_channel)));
+
+                    if(MonitorRead(monitor_ch) > MonitorReadLimit(monitor_ch))
+                    {
+                        MonitorDataAddOr(DEF_MONITOR_FAULT_0, (1 << DEF_FAULT_TEMPERATURE_0));
+                    }
+                    else
+                    {
+                        MonitorDataDelAnd(DEF_MONITOR_FAULT_0, (1 << DEF_FAULT_TEMPERATURE_0));
+                    }
+                }
                 break;
             case DEF_MONITOR_HTEMP_0:        // (DEF_MONITOR_CHANNEL_2)
+                hw_channel = DEF_ADC_HWTEMP_0;
+
+                if(MonitorReadCount(monitor_ch) < MonitorReadCountMax(monitor_ch))
+                {
+                    MonitorCountAdd(monitor_ch, 1);
+                    AdcSumBuffAdd(hw_channel, AdcBufferRead(hw_channel));
+                }
+                else
+                {
+                    uint32_t adc_sum = AdcSumBuffRead(hw_channel) / MonitorReadCountMax(monitor_ch);
+                    MonitorDataSet(monitor_ch, adc_sum);
+                    MonitorCountAdd(monitor_ch, -(MonitorReadCountMax(monitor_ch)));
+                    AdcSumBuffAdd(hw_channel, -(AdcSumBuffRead(hw_channel)));
+
+                    if(MonitorRead(monitor_ch) > MonitorReadLimit(monitor_ch))
+                    {
+                        MonitorDataAddOr(DEF_MONITOR_FAULT_0, (1 << DEF_FAULT_HWTEMPERATURE_0));
+                    }
+                    else
+                    {
+                        MonitorDataDelAnd(DEF_MONITOR_FAULT_0, (1 << DEF_FAULT_HWTEMPERATURE_0));
+                    }
+                }
                 break;
             case DEF_MONITOR_EXT_ATTEN_0:    // (DEF_MONITOR_CHANNEL_3)
+                hw_channel = DEF_ADC_EXT_ATTEN_0;
+                if(MonitorReadCount(monitor_ch) < MonitorReadCountMax(monitor_ch))
+                {
+                    MonitorCountAdd(monitor_ch, 1);
+                    AdcSumBuffAdd(hw_channel, AdcBufferRead(hw_channel));
+                }
+                else
+                {
+                    uint32_t adc_sum = AdcSumBuffRead(hw_channel) / MonitorReadCountMax(monitor_ch);
+                    MonitorDataSet(monitor_ch, adc_sum);
+                    MonitorCountAdd(monitor_ch, -(MonitorReadCountMax(monitor_ch)));
+                    AdcSumBuffAdd(hw_channel, -(AdcSumBuffRead(hw_channel)));
+
+                    ext_atten_load = true;
+                }
                 break;
             case DEF_MONITOR_INT_ATTEN_0:    // (DEF_MONITOR_CHANNEL_4)
+                if(ext_atten_load == true)
+                {
+                    MonitorDataSet(monitor_ch, MonitorReadData(DEF_MONITOR_EXT_ATTEN_0));
+                }
                 break;
             case DEF_MONITOR_EXT_SWITCH_0:   // (DEF_MONITOR_CHANNEL_5)
                 hw_channel = DEF_SWITCH_CHANNEL_0;
                 if(SwitchRead(hw_channel) == RS_GPIO_PIN_SET)
                 {
-                    MonitorCountAdd(ch, 1);
+                    if(MonitorReadCount(monitor_ch) > MonitorReadCountMax(monitor_ch))
+                    {
+                        MonitorDataSet(monitor_ch, 1);
+                    }
+                    else
+                    {
+                        MonitorCountAdd(monitor_ch, 1);
+                    }
                 }
                 else
                 {
-                    if(MonitorReadCount(ch) != 0)
+                    if(MonitorReadCount(monitor_ch) != 0)
                     {
-                        MonitorCountAdd(ch, -1);
+                        MonitorCountAdd(monitor_ch, -1);
                     }
                 }
                 break;
@@ -120,58 +220,60 @@ static void MonitorReadAp(void)
                 hw_channel = DEF_SWITCH_CHANNEL_1;
                 if(SwitchRead(hw_channel) == RS_GPIO_PIN_SET)
                 {
-                    MonitorCountAdd(ch, 1);
+                    if(MonitorReadCount(monitor_ch) > MonitorReadCountMax(monitor_ch))
+                    {
+                        MonitorDataSet(monitor_ch, 1);
+                    }
+                    else
+                    {
+                        MonitorCountAdd(monitor_ch, 1);
+                    }
                 }
                 else
                 {
-                    if(MonitorReadCount(ch) != 0)
+                    if(MonitorReadCount(monitor_ch) != 0)
                     {
-                        MonitorCountAdd(ch, -1);
+                        MonitorCountAdd(monitor_ch, -1);
                     }
                 }
                 break;
             case DEF_MONITOR_HPA_SHUTDOWN_0: // (DEF_MONITOR_CHANNEL_7)
-                hw_channel = DEF_SHUTDOWN_CHANNEL_0;
-                if(ShutdownRead(hw_channel) == RS_GPIO_PIN_SET)
-                {
-                    MonitorCountAdd(ch, 1);
-                }
-                else
-                {
-                    if(MonitorReadCount(ch) != 0)
-                    {
-                        MonitorCountAdd(ch, -1);
-                    }
-                }
                 break;
             case DEF_MONITOR_EXT_SHUTDOWN_0: // (DEF_MONITOR_CHANNEL_8)
                 hw_channel = DEF_EXT_SHUTDOWN_CHANNEL_0;
                 if(ExtShutdonRead(hw_channel) == RS_GPIO_PIN_SET)
                 {
-                    MonitorCountAdd(ch, 1);
+                    if(MonitorReadCount(monitor_ch) > MonitorReadCountMax(monitor_ch))
+                    {
+                        MonitorDataSet(monitor_ch, 1);
+                    }
+                    else
+                    {
+                        MonitorCountAdd(monitor_ch, 1);
+                    }
                 }
                 else
                 {
-                    if(MonitorReadCount(ch) != 0)
+                    if(MonitorReadCount(monitor_ch) != 0)
                     {
-                        MonitorCountAdd(ch, -1);
+                        MonitorCountAdd(monitor_ch, -1);
                     }
                 }
+                break;
+            case DEF_MONITOR_FAULT_0:        // (DEF_MONITOR_CHANNEL_9)
                 break;
             default:
                 break;
         }
     }
 }
-
-static void MonitorOperateAp (void)
+static void ApReadFaultWriteHwWithMonitor(void)
 {
-    static uint64_t fault_buff = 0;
     uint32_t hw_channel;
 
-    for(int ch = DEF_MONITOR_CHANNEL_0; ch < DEF_MONITOR_CHANNEL_MAX; ch++)
+    for(int monitor_ch = DEF_MONITOR_CHANNEL_0; monitor_ch < DEF_MONITOR_CHANNEL_MAX; monitor_ch++)
     {
-        switch(ch)
+        switch(monitor_ch)
         {
             case DEF_MONITOR_CURR_0:         // (DEF_MONITOR_CHANNEL_0)
                 break;
@@ -182,37 +284,46 @@ static void MonitorOperateAp (void)
             case DEF_MONITOR_EXT_ATTEN_0:    // (DEF_MONITOR_CHANNEL_3)
                 break;
             case DEF_MONITOR_INT_ATTEN_0:    // (DEF_MONITOR_CHANNEL_4)
+                if(ext_atten_load == true)
+                {
+                    ext_atten_load = false;
+                    uint16_t voltage = MonitorRead(DEF_MONITOR_EXT_ATTEN_0);
+                    VvaSendVoltage(DEF_VVA_CHANNEL_0, voltage);
+                }
                 break;
             case DEF_MONITOR_EXT_SWITCH_0:   // (DEF_MONITOR_CHANNEL_5)
-                hw_channel = DEF_SWITCH_CHANNEL_0;
-                if(MonitorReadCount(ch) > MonitorReadCountMax(ch))
-                {
-                    MonitorDataSet(ch, 1);
-                }
                 break;
             case DEF_MONITOR_EXT_SWITCH_1:   // (DEF_MONITOR_CHANNEL_6)
-                hw_channel = DEF_SWITCH_CHANNEL_1;
-                if(MonitorReadCount(ch) > MonitorReadCountMax(ch))
-                {
-                    MonitorDataSet(ch, 1);
-                }
                 break;
             case DEF_MONITOR_HPA_SHUTDOWN_0: // (DEF_MONITOR_CHANNEL_7)
                 hw_channel = DEF_SHUTDOWN_CHANNEL_0;
-                if(MonitorReadCount(ch) > MonitorReadCountMax(ch))
+                if(MonitorRead(DEF_MONITOR_FAULT_0) != 0)
                 {
-                    MonitorDataSet(ch, 1);
+                    MonitorDataSet(monitor_ch, 1);
+                    ShutdownOn(hw_channel);
                 }
-                break;
-            case DEF_MONITOR_EXT_SHUTDOWN_0: // (DEF_MONITOR_CHANNEL_8)
-                hw_channel = DEF_EXT_SHUTDOWN_CHANNEL_0;
-                if(MonitorReadCount(ch) > MonitorReadCountMax(ch))
+                else
                 {
-                    MonitorDataSet(ch, 1);
-                    if(MonitorReadData(ch) == 1)
+                    if(MonitorRead(monitor_ch) == 1)
                     {
                         ShutdownOn(hw_channel);
                     }
+                    else if(MonitorRead(monitor_ch) == 0)
+                    {
+                        ShutdownOff(hw_channel);
+                    }
+                }
+                break;
+            case DEF_MONITOR_EXT_SHUTDOWN_0: // (DEF_MONITOR_CHANNEL_8)
+                break;
+            case DEF_MONITOR_FAULT_0:        // (DEF_MONITOR_CHANNEL_9)
+                if(MonitorRead(DEF_MONITOR_FAULT_0) != 0)
+                {
+                    LedOn(DEF_LED_CHANNEL_1);
+                }
+                else
+                {
+                    LedOff(DEF_LED_CHANNEL_1);
                 }
                 break;
             default:
@@ -220,4 +331,3 @@ static void MonitorOperateAp (void)
         }
     }
 }
-
