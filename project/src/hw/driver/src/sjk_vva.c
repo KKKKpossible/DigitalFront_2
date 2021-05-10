@@ -16,9 +16,10 @@ AD5592R_t ad5592r_var;
 uint16_t  voltage_per_db_arr[VOLTAGE_DB_TABLE_MAX];
 
 
-static void DbCalculateVvaToSpiArr   (uint8_t ch, int      db_100multiple, uint8_t* buffer);
-static void VoltCalculateVvaToSpiArr (uint8_t ch, uint16_t milli_volt    , uint8_t* buffer);
-static bool SearchDbInTabel          (uint8_t ch, uint16_t milli_volt);
+static void DbCalculateVvaToSpiArr       (uint8_t ch, int      db_100multiple, uint8_t* buffer);
+static void VoltCalculateVvaToSpiArr     (uint8_t ch, uint16_t milli_volt    , uint8_t* buffer);
+static void MiliVoltCalculateVvaToSpiArr (uint8_t ch, uint16_t milli_volt    , uint8_t* buffer);
+static bool SearchDbInTabel              (uint8_t ch, uint16_t milli_volt);
 
 
 bool VvaInit(uint8_t ch)
@@ -84,7 +85,7 @@ bool VvaDbRead(uint8_t ch, uint16_t* db_buff)
     return ret;
 }
 
-bool VvaSendVoltage(uint8_t ch, uint16_t milli_volt)
+bool VvaSendVoltageInDBTable(uint8_t ch, uint16_t milli_volt)
 {
     bool    ret            = true;
     uint8_t spi_tr_buff[2] = {0, };
@@ -94,7 +95,24 @@ bool VvaSendVoltage(uint8_t ch, uint16_t milli_volt)
         case DEF_VVA_CHANNEL_0:
             VoltCalculateVvaToSpiArr(ch, milli_volt, spi_tr_buff);
             SpiWrite(DEF_SPI_CHANNEL_0, spi_tr_buff, 2);
+            break;
+        default:
+            ret = false;
+            break;
+    }
+    return ret;
+}
 
+bool VvaSendMiliVolt(uint8_t ch, uint16_t mili_volt)
+{
+    bool ret = true;
+    uint8_t spi_tr_buff[2] = {0, };
+
+    switch(ch)
+    {
+        case DEF_VVA_CHANNEL_0:
+            MiliVoltCalculateVvaToSpiArr(ch, mili_volt, spi_tr_buff);
+            SpiWrite(DEF_SPI_CHANNEL_0, spi_tr_buff, 2);
             break;
         default:
             ret = false;
@@ -285,6 +303,45 @@ static void VoltCalculateVvaToSpiArr(uint8_t ch, uint16_t milli_volt, uint8_t* b
     }
 }
 
+static void MiliVoltCalculateVvaToSpiArr(uint8_t ch, uint16_t milli_volt, uint8_t* buffer)
+{
+    switch(ch)
+    {
+        case DEF_VVA_CHANNEL_0:
+            if((milli_volt > 3300) || (milli_volt < 0))
+            {
+                buffer[0] = ad5592r_var.now_tr_data[0];
+                buffer[1] = ad5592r_var.now_tr_data[1];
+                break;
+            }
+
+            float f_voltage_12bit_buff = milli_volt * 4095.0 / 3300.0;
+            int i_voltage_12bit_buff = f_voltage_12bit_buff;
+            if(f_voltage_12bit_buff - (int)f_voltage_12bit_buff > 0.5)
+            {
+                i_voltage_12bit_buff += 1;
+            }
+            if(i_voltage_12bit_buff > 4095)
+            {
+                i_voltage_12bit_buff = 4095;
+            }
+
+            uint8_t high_4 = i_voltage_12bit_buff >> 8;
+            uint8_t low_8  = i_voltage_12bit_buff - (high_4 << 8);
+
+            uint8_t tr_buffer[2] = {0b10000000, 0b00000000};
+
+            tr_buffer[0] |= high_4;
+            tr_buffer[1] |= low_8;
+
+            buffer[0] = tr_buffer[0];
+            buffer[1] = tr_buffer[1];
+
+            ad5592r_var.now_tr_data[0] = tr_buffer[0];
+            ad5592r_var.now_tr_data[1] = tr_buffer[1];
+            break;
+    }
+}
 bool VvaTableLoad(uint8_t ch)
 {
     bool ret = true;

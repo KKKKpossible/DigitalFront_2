@@ -26,6 +26,7 @@ bool HwInit(void)
 	VvaInit        (DEF_VVA_CHANNEL_0);
     ShutdownInit   (DEF_SHUTDOWN_CHANNEL_0);
     ExtShutdonInit (DEF_EXT_SHUTDOWN_CHANNEL_0);
+    I2CInit        ();
 
     SwitchInit     (DEF_SWITCH_CHANNEL_0);
     SwitchInit     (DEF_SWITCH_CHANNEL_1);

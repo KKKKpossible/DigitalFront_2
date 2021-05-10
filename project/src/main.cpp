@@ -8,6 +8,7 @@ extern ApClass ap;
 int main(void)
 {
 	HwInit();
+	ap.ApppInit();
 	ApInit();
 
 	while(true)

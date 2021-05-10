@@ -52,8 +52,8 @@ extern "C"{
 
 #define DEF_ADC_CURRENT_0          (DEF_ADC_CHANNEL_0)
 #define DEF_ADC_TEMP_0             (DEF_ADC_CHANNEL_1)
-#define DEF_ADC_EXT_ATTEN_0        (DEF_ADC_CHANNEL_2)
-#define DEF_ADC_HWTEMP_0           (DEF_ADC_CHANNEL_7)
+#define DEF_ADC_HS_TEMP_0          (DEF_ADC_CHANNEL_2)
+#define DEF_ADC_EXT_ATTEN_0        (DEF_ADC_CHANNEL_3)
 
 // monitor channel
 #define DEF_MONITOR_CHANNEL_0      (0U)
@@ -94,10 +94,22 @@ extern "C"{
 #define DEF_SWITCH_CHANNEL_1       (1U)
 
 // fault channel
-#define DEF_FAULT_CURRENT_0        (0U)
-#define DEF_FAULT_TEMPERATURE_0    (1U)
-#define DEF_FAULT_HWTEMPERATURE_0  (2U)
-#define DEF_FAULT_VOLTAGE_0        (3U)
+#define DEF_FAULT_CHANNEL_0        (0U)
+#define DEF_FAULT_CHANNEL_1        (1U)
+#define DEF_FAULT_CHANNEL_2        (2U)
+#define DEF_FAULT_CHANNEL_3        (3U)
+
+#define DEF_FAULT_CURRENT_0        (DEF_FAULT_CHANNEL_0)
+#define DEF_FAULT_TEMPERATURE_0    (DEF_FAULT_CHANNEL_1)
+#define DEF_FAULT_HS_TEMPERATURE_0 (DEF_FAULT_CHANNEL_2)
+#define DEF_FAULT_VOLTAGE_0        (DEF_FAULT_CHANNEL_3)
+
+// i2c channel
+#define DEF_I2C_CHANNEL_0          (0U)
+
+// lcd channel
+#define DEF_LCD_CHANNEL_0          (0U)
+
 
 #ifdef __cplusplus
 }

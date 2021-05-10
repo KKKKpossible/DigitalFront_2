@@ -450,7 +450,7 @@ void CliVvaMiliVoltSet(uint8_t ch, char* fmt, ...)
     va_start(args, fmt);
     vsnprintf(buf, 256, fmt, args);
 
-    bool result = VvaSendVoltage(DEF_VVA_CHANNEL_0, atoi(buf));
+    bool result = VvaSendMiliVolt(DEF_VVA_CHANNEL_0, atoi(buf));
 
     switch(ch)
     {

@@ -18,23 +18,30 @@ bool SpiInit(uint8_t ch)
     bool    ret = true;
     uint8_t data[2] = {0, };
 
-    hspi1.Instance               = SPI1;
-    hspi1.Init.Mode              = SPI_MODE_MASTER;
-    hspi1.Init.Direction         = SPI_DIRECTION_2LINES;
-    hspi1.Init.DataSize          = SPI_DATASIZE_8BIT;
-    hspi1.Init.CLKPolarity       = SPI_POLARITY_HIGH;
-    hspi1.Init.CLKPhase          = SPI_PHASE_2EDGE;
-    hspi1.Init.NSS               = SPI_NSS_SOFT;
+
+    /* USER CODE BEGIN SPI1_Init 0 */
+
+    /* USER CODE END SPI1_Init 0 */
+
+    /* USER CODE BEGIN SPI1_Init 1 */
+
+    /* USER CODE END SPI1_Init 1 */
+    hspi1.Instance = SPI1;
+    hspi1.Init.Mode = SPI_MODE_MASTER;
+    hspi1.Init.Direction = SPI_DIRECTION_2LINES;
+    hspi1.Init.DataSize = SPI_DATASIZE_8BIT;
+    hspi1.Init.CLKPolarity = SPI_POLARITY_LOW;
+    hspi1.Init.CLKPhase = SPI_PHASE_2EDGE;
+    hspi1.Init.NSS = SPI_NSS_SOFT;
     hspi1.Init.BaudRatePrescaler = SPI_BAUDRATEPRESCALER_64;
-    hspi1.Init.FirstBit          = SPI_FIRSTBIT_MSB;
-    hspi1.Init.TIMode            = SPI_TIMODE_DISABLE;
-    hspi1.Init.CRCCalculation    = SPI_CRCCALCULATION_DISABLE;
-    hspi1.Init.CRCPolynomial     = 10;
+    hspi1.Init.FirstBit = SPI_FIRSTBIT_MSB;
+    hspi1.Init.TIMode = SPI_TIMODE_DISABLE;
+    hspi1.Init.CRCCalculation = SPI_CRCCALCULATION_DISABLE;
+    hspi1.Init.CRCPolynomial = 10;
     if (HAL_SPI_Init(&hspi1) != HAL_OK)
     {
       Error_Handler();
     }
-
 
     switch(ch)
     {
@@ -59,6 +66,7 @@ bool SpiWrite(uint8_t ch, uint8_t* data, uint16_t size)
         case DEF_SPI_CHANNEL_0:
             GpioOff(DEF_SPI_SS_CHANNEL_0);
             HAL_SPI_Transmit(&hspi1, data, size, 10);
+//            HAL_SPI_Transmit_IT(&hspi1, data, size);
             GpioOn(DEF_SPI_SS_CHANNEL_0);
             break;
         default:
@@ -104,6 +112,7 @@ bool SpiWriteRead(uint8_t ch, uint8_t* buffer, uint16_t size)
 void HAL_SPI_TxCpltCallback(SPI_HandleTypeDef *hspi)
 {
 }
+
 
 void HAL_SPI_MspInit(SPI_HandleTypeDef* spiHandle)
 {

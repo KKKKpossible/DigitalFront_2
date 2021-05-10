@@ -30,6 +30,7 @@ extern "C"{
 #include "sjk_flash.h"
 #include "sjk_shutdown.h"
 #include "sjk_switch.h"
+#include "sjk_i2c.h"
 
 
 bool HwInit(void);

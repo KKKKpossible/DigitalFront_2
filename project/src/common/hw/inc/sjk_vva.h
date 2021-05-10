@@ -48,13 +48,14 @@ extern AD5592R_t ad5592r_var;
 extern uint16_t  voltage_per_db_arr[VOLTAGE_DB_TABLE_MAX];
 
 
-bool     VvaInit        (uint8_t ch);
-bool     VvaSendDb      (uint8_t ch, int db_100multiple);
-bool     VvaDbRead      (uint8_t ch, uint16_t* db_buff);
-bool     VvaSendVoltage (uint8_t ch, uint16_t voltage);
-bool     VvaReadVoltage (uint8_t ch, uint16_t* mv_buff);
-bool     VvaTableLoad   (uint8_t ch);
-bool     VvaTableSave   (uint8_t ch);
+bool     VvaInit                 (uint8_t ch);
+bool     VvaSendDb               (uint8_t ch, int db_100multiple);
+bool     VvaDbRead               (uint8_t ch, uint16_t* db_buff );
+bool     VvaSendVoltageInDBTable (uint8_t ch, uint16_t voltage  );
+bool     VvaSendMiliVolt         (uint8_t ch, uint16_t mili_volt);
+bool     VvaReadVoltage          (uint8_t ch, uint16_t* mv_buff );
+bool     VvaTableLoad            (uint8_t ch);
+bool     VvaTableSave            (uint8_t ch);
 
 #endif
 

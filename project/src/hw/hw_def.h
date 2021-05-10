@@ -49,9 +49,13 @@
 #define HW_SHUTDOWN_USE
 #define     HW_SHUTDOWN_CHANNEL_MAX     (1U)
 
-
 #define HW_SWITCH_USE
 #define     HW_SWITCH_CHANNEL_MAX       (2U)
 
+#define HW_I2C_USE
+#define     HW_I2C_CHANNEL_MAX          (1U)
+
+#define HW_OLED_USE
+#define     HW_OLED_CHANNEL_MAX         (1U)
 
 #endif /* SRC_HW_HW_DEF_H_ */

@@ -9,6 +9,9 @@
 #define SRC_AP_AP_PP_H_
 
 
+#include "hw_pp.h"
+
+
 class ApClass
 {
 public:
@@ -16,7 +19,6 @@ public:
 	bool ApppInit(void);
 	bool ApppMain(void);
 };
-
 
 
 #endif /* SRC_AP_AP_PP_H_ */

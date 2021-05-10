@@ -211,7 +211,7 @@
                     					
                     <sourceEntries>
                         						
-                        <entry excluding="src/main.c|src/lib/Core" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
+                        <entry excluding="oled_inc|oled_src|src/main.c|src/lib/Core" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
                         					
                     </sourceEntries>
                     				
@@ -381,7 +381,7 @@
                     					
                     <sourceEntries>
                         						
-                        <entry excluding="src/main.c|src/lib/Core" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
+                        <entry excluding="oled_inc|oled_src|src/main.c|src/lib/Core" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
                         					
                     </sourceEntries>
                     				
