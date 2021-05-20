@@ -41,9 +41,7 @@ bool ApMain(void)
 	if(millis() - tick > 1)
     {
 	    tick = millis();
-
 	    ApMonitor();
-
 	    ApBlink();
     }
 
@@ -54,17 +52,18 @@ static void ApBlink(void)
 {
     static uint16_t blink = 0;
 
-    if(blink > 500)
+    if(blink == 0)
     {
         LedOn(DEF_LED_CHANNEL_0);
-        if(blink > 1000)
-        {
-            blink = 0;
-        }
     }
-    else
+    else if(blink == 50)
     {
         LedOff(DEF_LED_CHANNEL_0);
+    }
+    else if(blink == 100)
+    {
+        blink = 0;
+        return;
     }
 
     blink++;

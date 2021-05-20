@@ -58,4 +58,5 @@
 #define HW_OLED_USE
 #define     HW_OLED_CHANNEL_MAX         (1U)
 
+
 #endif /* SRC_HW_HW_DEF_H_ */

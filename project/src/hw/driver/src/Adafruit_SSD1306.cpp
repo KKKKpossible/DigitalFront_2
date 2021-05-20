@@ -6,16 +6,22 @@
 #include "Adafruit_GFX.h"
 #include "Adafruit_SSD1306.h"
 
+#include "hw_def.h"
+#include "sjk_monitor.h"
+
+
 #define SSD1306_CMD   0x00
 #define SSD1306_DATA  0x40
+#define OLED_RESET 0
 
 
 #define pgm_read_byte(addr) (*(const unsigned char *)(addr))
 
 
-uint8_t Buffer_CMD[]  = {SSD1306_CMD, 0x00};
-uint8_t Buffer_DATA[129]= {SSD1306_DATA,};
+uint8_t Buffer_CMD[]     = {SSD1306_CMD, 0x00};
+uint8_t Buffer_DATA[129 + 4] = {SSD1306_DATA,};
 
+Adafruit_SSD1306 display(OLED_RESET);
 
 // the memory buffer for the LCD
 static uint8_t buffer[SSD1306_LCDHEIGHT * SSD1306_LCDWIDTH / 8] = {
@@ -162,6 +168,40 @@ void Adafruit_SSD1306::begin(uint8_t vccstate, uint8_t i2caddr, bool reset) {
   ssd1306_command(SSD1306_DISPLAYON);//--turn on oled panel
 }
 
+void Adafruit_SSD1306::begin_1106(uint8_t vccstate, uint8_t i2caddr, bool reset)
+{
+    _vccstate = vccstate;
+    _i2caddr = i2caddr;
+
+    HAL_GPIO_WritePin(RESET_GPIO_Port, RESET_Pin, GPIO_PIN_SET);
+    HAL_Delay(1000);
+    HAL_GPIO_WritePin(RESET_GPIO_Port, RESET_Pin, GPIO_PIN_RESET);
+    HAL_Delay(1000);
+    HAL_GPIO_WritePin(RESET_GPIO_Port, RESET_Pin, GPIO_PIN_SET);
+    HAL_Delay(1000);
+
+    HAL_GPIO_WritePin(CS_GPIO_Port, CS_Pin, GPIO_PIN_RESET);
+    HAL_GPIO_WritePin(D_C_GPIO_Port, D_C_Pin, GPIO_PIN_SET);
+    HAL_Delay(1000);
+
+    ssd1306_command(0xAF); // on
+    display_1106();
+    ssd1306_command(0x33); // pump voltage 9v
+    ssd1306_command(0x81); // Contrast cmd
+    ssd1306_command(0xFF); // Contrast data
+    HAL_Delay(2000);
+
+    clearDisplay();
+    display_1106();
+
+    setCursor(0, 4);
+    setTextSize(8);
+    setTextColor(WHITE);
+    write('A');
+    setCursor(cursor_x + 20, 4);
+    write('Z');
+    display_1106();
+}
 
 void Adafruit_SSD1306::invertDisplay(uint8_t i) {
   if (i) {
@@ -173,31 +213,70 @@ void Adafruit_SSD1306::invertDisplay(uint8_t i) {
 
 void Adafruit_SSD1306::ssd1306_command(uint8_t c) {
   
-  Buffer_CMD[1] = c;
-  
-  while(HAL_I2C_Master_Transmit(&hi2c1,_i2caddr,Buffer_CMD,0x02,0x10) != HAL_OK)
-  {
+    Buffer_CMD[1] = c;
 
-  }
-  
+    uint32_t mil = millis();
 
+    while(HAL_I2C_Master_Transmit_DMA(&hi2c1, _i2caddr, Buffer_CMD, 0x02) != HAL_OK)
+    {
+        if(millis() - mil > 100)
+        {
+            MonitorDataAddOr(DEF_MONITOR_FAULT_0, (1 << DEF_FAULT_OLED));
+            return;
+        }
+    }
+    while(hi2c1.hdmatx->State != HAL_DMA_STATE_READY)
+    {
+    }
+
+    MonitorDataDelAnd(DEF_MONITOR_FAULT_0, DEF_FAULT_OLED);
 }
 
 void Adafruit_SSD1306::ssd1306_data(uint16_t a)  {
 
-  uint8_t i;
+    uint8_t i;
 
-  
-  for(i = 0; i < 128 ; i++) {
-    Buffer_DATA[i+1] = buffer[a+i];
-  }
-  
-  while(HAL_I2C_Master_Transmit(&hi2c1,_i2caddr,Buffer_DATA,129,0x10) != HAL_OK)
-  {
+    for(i = 0; i < 128 ; i++)
+    {
+        Buffer_DATA[i + 1] = buffer[a + i];
+    }
 
-  }
+    uint32_t mil = millis();
 
+    while(HAL_I2C_Master_Transmit_DMA(&hi2c1, _i2caddr, Buffer_DATA, 129) != HAL_OK)
+    {
+        if(millis() - mil > 100)
+        {
+            return;
+        }
+    }
+    while(hi2c1.hdmatx->State != HAL_DMA_STATE_READY)
+    {
+    }
 }
+
+void Adafruit_SSD1306::sh1106_data(uint16_t a)  {
+
+    uint8_t i;
+
+    for(i = 2; i < 128 + 2; i++)
+    {
+        Buffer_DATA[i + 1] = buffer[a + (i - 2)];
+    }
+
+    uint32_t mil = millis();
+
+    while(HAL_I2C_Master_Transmit_DMA(&hi2c1, _i2caddr, Buffer_DATA, 129 + 4) != HAL_OK)
+    {
+        if(millis() - mil > 100)
+        {
+            return;
+        }
+    }
+    while(hi2c1.hdmatx->State != HAL_DMA_STATE_READY);
+}
+
+
 
 
 
@@ -315,7 +394,6 @@ void Adafruit_SSD1306::display(void) {
 
 //I2C write
   for (uint16_t i=0; i<(SSD1306_LCDWIDTH*SSD1306_LCDHEIGHT/8); i += 128) {
-    
     ssd1306_data(i);
   }
 
@@ -325,10 +403,21 @@ void Adafruit_SSD1306::display(void) {
   
 }
 
+void Adafruit_SSD1306::display_1106(void)
+{
+    for(int i = 0; i < 8; i++)
+    {
+        ssd1306_command(0xB0 + i); // page 0
+        ssd1306_command(0x00);     // column lower  0
+        ssd1306_command(0x10);     // column higher 0
+        sh1106_data(128 * i);
+    }
+}
+
 // clear everything
-void Adafruit_SSD1306::clearDisplay(void) {
-  
-  memset(buffer, 0, (SSD1306_LCDWIDTH*SSD1306_LCDHEIGHT/8));
+void Adafruit_SSD1306::clearDisplay(void)
+{
+    memset(buffer, 0, (SSD1306_LCDWIDTH * SSD1306_LCDHEIGHT / 8));
 }
 
 

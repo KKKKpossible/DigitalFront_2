@@ -21,6 +21,13 @@ extern "C"{
 #define DEF_GPIO_OUTPUT_CHANNEL_MAX HW_GPIO_OUTPUT_CHANNEL_MAX
 #define DEF_GPIO_INPUT_CHANNEL_MAX  HW_GPIO_INPUT_CHANNEL_MAX
 
+#define RESET_Pin       GPIO_PIN_13
+#define RESET_GPIO_Port GPIOB
+#define D_C_Pin         GPIO_PIN_14
+#define D_C_GPIO_Port   GPIOB
+#define CS_Pin          GPIO_PIN_15
+#define CS_GPIO_Port    GPIOB
+
 
 typedef struct Gpio_t
 {

@@ -8,8 +8,9 @@ extern ApClass ap;
 int main(void)
 {
 	HwInit();
-	ap.ApppInit();
+	HwppInit();
 	ApInit();
+	ap.ApppInit();
 
 	while(true)
 	{

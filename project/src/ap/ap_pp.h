@@ -15,9 +15,11 @@
 class ApClass
 {
 public:
-	ApClass(void);
-	bool ApppInit(void);
-	bool ApppMain(void);
+	     ApClass         (void);
+	bool ApppInit        (void);
+	bool ApppMain        (void);
+	bool ApppOLEDInit    (void);
+	bool ApppOLEDOperate (void);
 };
 
 

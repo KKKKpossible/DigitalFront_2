@@ -11,7 +11,11 @@
 
 #include "hw_def.h"
 
-#include "sjk_oled_pp.h"
+#include "sjk_monitor.h"
+#include "Adafruit_SSD1306.h"
+
+
+bool HwppInit(void);
 
 
 #endif /* SRC_HW_HW_PP_H_ */

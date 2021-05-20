@@ -98,17 +98,19 @@ extern "C"{
 #define DEF_FAULT_CHANNEL_1        (1U)
 #define DEF_FAULT_CHANNEL_2        (2U)
 #define DEF_FAULT_CHANNEL_3        (3U)
+#define DEF_FAULT_CHANNEL_4        (4U)
 
 #define DEF_FAULT_CURRENT_0        (DEF_FAULT_CHANNEL_0)
 #define DEF_FAULT_TEMPERATURE_0    (DEF_FAULT_CHANNEL_1)
 #define DEF_FAULT_HS_TEMPERATURE_0 (DEF_FAULT_CHANNEL_2)
 #define DEF_FAULT_VOLTAGE_0        (DEF_FAULT_CHANNEL_3)
+#define DEF_FAULT_OLED             (DEF_FAULT_CHANNEL_4)
 
 // i2c channel
 #define DEF_I2C_CHANNEL_0          (0U)
 
 // lcd channel
-#define DEF_LCD_CHANNEL_0          (0U)
+#define DEF_OLED_CHANNEL_0         (0U)
 
 
 #ifdef __cplusplus

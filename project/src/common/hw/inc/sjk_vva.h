@@ -23,7 +23,7 @@ extern "C"{
 
 #define VOLTAGE_DB_TABLE_MAX (31U)
 
-#define VVA_SAVE_CHECK_ADDR  (0x8000000 + (62 * 1024))
+#define VVA_SAVE_CHECK_ADDR  (0x8000000 + ((63 * 1024) + 512))
 
 #define SAVE_KEY_VALUE_0     (118U)
 #define SAVE_KEY_VALUE_1     (96U)
@@ -56,6 +56,7 @@ bool     VvaSendMiliVolt         (uint8_t ch, uint16_t mili_volt);
 bool     VvaReadVoltage          (uint8_t ch, uint16_t* mv_buff );
 bool     VvaTableLoad            (uint8_t ch);
 bool     VvaTableSave            (uint8_t ch);
+
 
 #endif
 

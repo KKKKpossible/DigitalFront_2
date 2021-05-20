@@ -25,8 +25,8 @@ bool     MonitorInit         (void);
 int64_t  MonitorRead         (uint8_t ch);
 int64_t  MonitorReadData     (uint8_t ch);
 int      MonitorReadCount    (uint8_t ch);
-int64_t MonitorReadCountMax  (uint8_t ch);
-int64_t MonitorReadLimit     (uint8_t ch);
+int64_t  MonitorReadCountMax  (uint8_t ch);
+int64_t  MonitorReadLimit     (uint8_t ch);
 void     MonitorDataSet      (uint8_t ch, int64_t data     );
 void     MonitorDataAddOr    (uint8_t ch, int64_t data     );
 void     MonitorDataDelAnd   (uint8_t ch, int64_t data     );
@@ -35,6 +35,7 @@ void     MonitorRatioPerSet  (uint8_t ch, int64_t ratio_per);
 void     MonitorRatioValSet  (uint8_t ch, int64_t ratio_val);
 void     MonitorCountAdd     (uint8_t ch, int64_t data     );
 void     MonitorLimitSet     (uint8_t ch, int64_t limit    );
+
 
 #endif
 
